@@ -1,16 +1,56 @@
-# todo_app
+## Todo App (Flutter)
 
-A new Flutter project.
+✔️ A productivity-focused task manager with offline support and reminders to help users stay organized.
 
-## Getting Started
+## 🚀 Key Features & Achievements
 
-This project is a starting point for a Flutter application.
+• Fully offline-capable using SQLite (sqflite) for local data persistence
 
-A few resources to get you started if this is your first Flutter project:
+• Smart notification system for task reminders
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+• Clean and intuitive UI for seamless task management
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## ⚙️ Technical Implementation
+
+• State Management: BLoC pattern for predictable and scalable state handling
+
+• Database: SQLite (sqflite) for fast and reliable offline storage
+
+• Notifications: Scheduled alerts for important tasks
+
+• Dark/Light Theme: Support for user preference
+
+## 📋 Core Functionality
+
+• Create, edit, and delete tasks
+
+• Mark tasks as complete
+
+• Set due dates and reminders
+
+• Organize tasks with categories/tags (optional)
+
+• Search and filter tasks
+
+## 🌟 Why This App Stands Out
+
+• Works completely offline – no internet required
+
+• Lightweight & fast – optimized database queries
+
+• Customizable reminders – never miss a deadline
+
+## 📌 Getting Started (Optional)
+
+Want to run this project locally?
+
+• Clone the repo
+
+• Run flutter pub get
+
+• Launch the app with flutter run
+
+
+
+
+
