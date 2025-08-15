@@ -1,4 +1,7 @@
-abstract class AppStates {}
+abstract class AppStates {
+  final String? error;
+  AppStates({this.error});
+}
 
 class AppInitialState extends AppStates {}
 
@@ -21,11 +24,9 @@ class AppDeleteDatabaseState extends AppStates {}
 class AppChangeBottomSheetState extends AppStates {}
 
 class AppErrorState extends AppStates {
-  final String error;
-  AppErrorState(this.error);
+  AppErrorState({super.error});
 }
 
 class AppErrorDatabaseState extends AppStates {
-  final String error;
-  AppErrorDatabaseState(this.error);
+  AppErrorDatabaseState({super.error});
 }

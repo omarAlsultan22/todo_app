@@ -4,7 +4,6 @@ import 'package:todo_app/shared/components/components.dart';
 import '../shared/local/database/database_cubit.dart';
 import '../shared/local/database/database_states.dart';
 
-
 class ArchivedTasksScreen extends StatelessWidget {
   const ArchivedTasksScreen({super.key});
 
