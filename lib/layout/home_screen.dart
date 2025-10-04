@@ -20,67 +20,77 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController timeController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
 
+  void statesListener(AppStates state) {
+    if (state is AppInsertDatabaseState) {
+      Navigator.pop(context);
+      titleController.clear();
+      timeController.clear();
+      dateController.clear();
+    } else if (state is AppErrorDatabaseState) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${state.error}')),
+      );
+    }
+  }
+
+  Widget _buildWidget(AppCubit cubit, AppStates state) {
+    return Scaffold(
+      key: scaffoldKey,
+      appBar: AppBar(
+        title: Text(cubit.titles[cubit.currentIndex]),
+      ),
+      body: ConditionalBuilder(
+        condition: state is! AppGetDatabaseLoadingState,
+        builder: (context) => cubit.screens[cubit.currentIndex],
+        fallback: (context) => const Center(child: CircularProgressIndicator()),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (cubit.isBottomSheetShown) {
+            if (formKey.currentState!.validate()) {
+              cubit.insertToDatabase(
+                title: titleController.text,
+                time: timeController.text,
+                date: dateController.text,
+              );
+            }
+          } else {
+            scaffoldKey.currentState
+                ?.showBottomSheet(
+                  (context) => _buildBottomSheet(cubit),
+              elevation: 20.0,
+            )
+                .closed
+                .then((value) {
+              cubit.changeBottomSheetState(isShow: false, icon: Icons.edit);
+            });
+
+            cubit.changeBottomSheetState(isShow: true, icon: Icons.add);
+          }
+        },
+        child: Icon(cubit.fabIcon),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: cubit.currentIndex,
+        onTap: (index) => cubit.changeIndex(index),
+        items: cubit.items,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AppCubit>(
-      create: (BuildContext context) => AppCubit()..createDatabase(),
+      create: (BuildContext context) =>
+      AppCubit()
+        ..createDatabase(),
       child: BlocConsumer<AppCubit, AppStates>(
         listener: (context, state) {
-          if (state is AppInsertDatabaseState) {
-            Navigator.pop(context);
-            titleController.clear();
-            timeController.clear();
-            dateController.clear();
-          } else if (state is AppErrorDatabaseState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error: ${state.error}')),
-            );
-          }
+          statesListener(state);
         },
         builder: (context, state) {
           var cubit = AppCubit.get(context);
-          return Scaffold(
-            key: scaffoldKey,
-            appBar: AppBar(
-              title: Text(cubit.titles[cubit.currentIndex]),
-            ),
-            body: ConditionalBuilder(
-              condition: state is! AppGetDatabaseLoadingState,
-              builder: (context) => cubit.screens[cubit.currentIndex],
-              fallback: (context) => const Center(child: CircularProgressIndicator()),
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                if (cubit.isBottomSheetShown) {
-                  if (formKey.currentState!.validate()) {
-                    cubit.insertToDatabase(
-                      title: titleController.text,
-                      time: timeController.text,
-                      date: dateController.text,
-                    );
-                  }
-                } else {
-                  scaffoldKey.currentState
-                      ?.showBottomSheet(
-                        (context) => _buildBottomSheet(cubit),
-                    elevation: 20.0,
-                  )
-                      .closed
-                      .then((value) {
-                    cubit.changeBottomSheetState(isShow: false, icon: Icons.edit);
-                  });
-
-                  cubit.changeBottomSheetState(isShow: true, icon: Icons.add);
-                }
-              },
-              child: Icon(cubit.fabIcon),
-            ),
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: cubit.currentIndex,
-              onTap: (index) => cubit.changeIndex(index),
-              items: cubit.items,
-            ),
-          );
+          return _buildWidget(cubit, state);
         },
       ),
     );
@@ -115,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   timeController.text = pickedTime.format(context);
                 }
               },
-              validator: (value) =>  validator(value!, 'Time'),
+              validator: (value) => validator(value!, 'Time'),
               label: 'Task Time',
               prefix: Icons.watch_later_outlined,
             ),

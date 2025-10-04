@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import '../local/database/database_cubit.dart';
 
 
+Widget sizeBox() =>
+    SizedBox(height: 15.0);
+
+
 String? validator(String value, String fieldName) {
   if (value.isEmpty) {
     return 'Please enter your $fieldName';
   }
   return null;
 }
-
-
-Widget sizeBox() =>
-    SizedBox(height: 15.0);
 
 
 Widget defaultFormField({
