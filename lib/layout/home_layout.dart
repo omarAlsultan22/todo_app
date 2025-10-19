@@ -1,10 +1,11 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import '../shared/components/components.dart';
-import '../shared/local/database/database_cubit.dart';
 import '../shared/local/database/database_states.dart';
+import '../shared/local/database/database_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../shared/components/components.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController timeController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
 
+
   void statesListener(AppStates state) {
     if (state is AppInsertDatabaseState) {
       Navigator.pop(context);
@@ -32,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
   }
+
 
   Widget _buildWidget(AppCubit cubit, AppStates state) {
     return Scaffold(
@@ -78,23 +81,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider<AppCubit>(
-      create: (BuildContext context) =>
-      AppCubit()
-        ..createDatabase(),
-      child: BlocConsumer<AppCubit, AppStates>(
-        listener: (context, state) {
-          statesListener(state);
-        },
-        builder: (context, state) {
-          var cubit = AppCubit.get(context);
-          return _buildWidget(cubit, state);
-        },
-      ),
-    );
-  }
 
   Widget _buildBottomSheet(AppCubit cubit) {
     return Container(
@@ -150,6 +136,25 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider<AppCubit>(
+      create: (BuildContext context) =>
+      AppCubit()
+        ..createDatabase(),
+      child: BlocConsumer<AppCubit, AppStates>(
+        listener: (context, state) {
+          statesListener(state);
+        },
+        builder: (context, state) {
+          var cubit = AppCubit.get(context);
+          return _buildWidget(cubit, state);
+        },
       ),
     );
   }

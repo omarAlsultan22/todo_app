@@ -1,10 +1,11 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
-import 'package:flutter/material.dart';
 import '../local/database/database_cubit.dart';
+import 'package:flutter/material.dart';
 
 
 Widget sizeBox() =>
     SizedBox(height: 15.0);
+
 
 
 String? validator(String value, String fieldName) {
@@ -13,6 +14,7 @@ String? validator(String value, String fieldName) {
   }
   return null;
 }
+
 
 
 Widget defaultFormField({
@@ -33,6 +35,7 @@ Widget defaultFormField({
         prefixIcon: Icon(prefix),
       ),
     );
+
 
 
 Widget buildTaskItem(Map model, BuildContext context) =>
@@ -84,7 +87,6 @@ Widget buildTaskItem(Map model, BuildContext context) =>
       AppCubit.get(context).deleteData(id: model['id']);
     },
   );
-
 
 
 

@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:todo_app/modules/new_tasks_screen.dart';
+import '../../../modules/archived_tasks_screen.dart';
+import '../../../modules/done_tasks_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:todo_app/modules/new_tasks.dart';
-import '../../../modules/archived_tasks.dart';
-import '../../../modules/done_tasks.dart';
 import 'database_states.dart';
 
 
@@ -14,10 +14,10 @@ class AppCubit extends Cubit<AppStates> {
 
   int currentIndex = 0;
   late Database database;
+
   List<Map> newTasks = [];
   List<Map> doneTasks = [];
   List<Map> archivedTasks = [];
-
 
   List<String> titles = [
     "New Tasks",
@@ -82,7 +82,8 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  insertToDatabase({
+
+  void insertToDatabase({
     required String title,
     required String time,
     required String date,
@@ -101,6 +102,7 @@ class AppCubit extends Cubit<AppStates> {
         })
     );
   }
+
 
   void getDataFromDatabase(database) {
     newTasks = [];
@@ -126,6 +128,7 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
+
   void updateData({
     required String status,
     required int id,
@@ -150,6 +153,7 @@ class AppCubit extends Cubit<AppStates> {
       emit(AppDeleteDatabaseState());
     });
   }
+
 
   bool isBottomSheetShown = false;
   IconData fabIcon = Icons.edit;
