@@ -1,6 +1,6 @@
-import 'package:todo_app/modules/new_tasks_screen.dart';
-import '../../../modules/archived_tasks_screen.dart';
-import '../../../modules/done_tasks_screen.dart';
+import '../../../screens/archived_tasks_screen.dart';
+import '../../../screens/done_tasks_screen.dart';
+import '../../../screens/new_tasks_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
