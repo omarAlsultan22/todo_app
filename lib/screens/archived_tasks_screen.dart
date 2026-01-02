@@ -1,8 +1,10 @@
-import 'package:todo_app/shared/components/components.dart';
-import '../shared/local/database/database_states.dart';
-import '../shared/local/database/database_cubit.dart';
+import 'package:todo_app/shared/components/widgets/states/error_state.dart';
+import '../shared/components/widgets/states/init_state.dart';
+import 'package:todo_app/shared/cubit/tasks_cubit.dart';
+import 'package:todo_app/shared/states/states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/cupertino.dart';
+import '../layout/tasks_layout.dart';
 
 
 class ArchivedTasksScreen extends StatelessWidget {
@@ -10,14 +12,14 @@ class ArchivedTasksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppCubit, AppStates>(
+    return BlocBuilder<TasksCubit, TasksStates>(
       builder: (context, state) {
-        var tasks = AppCubit
-            .get(context)
-            .archivedTasks;
-        return tasksBuilder(
-            tasks: tasks
-        );
+        return state.when<Widget>(
+            initial: () => TasksInitStateWidget(),
+            loaded: (newData) => TasksLayout(tasks: newData!.archivedTasks),
+            error: (error) =>
+                TasksErrorStateWidget(error: error,
+                    onRetry: () => TasksCubit.get(context).loadTasks()));
       },
     );
   }

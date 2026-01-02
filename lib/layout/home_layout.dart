@@ -1,9 +1,15 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
-import '../shared/local/database/database_states.dart';
-import '../shared/local/database/database_cubit.dart';
+import 'package:todo_app/shared/components/validators/form_validators.dart';
+import 'package:todo_app/shared/components/widgets/default_form_field.dart';
+import 'package:todo_app/shared/local/repository/DatabaseRepository.dart';
+import 'package:todo_app/shared/components/widgets/spacers.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../shared/components/components.dart';
+import '../screens/archived_tasks_screen.dart';
+import '../screens/done_tasks_screen.dart';
+import '../screens/new_tasks_screen.dart';
+import '../shared/cubit/tasks_cubit.dart';
 import 'package:flutter/material.dart';
+import '../shared/states/states.dart';
 import 'package:intl/intl.dart';
 
 
@@ -22,7 +28,32 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController dateController = TextEditingController();
 
 
-  void statesListener(AppStates state) {
+  static const List<String> screensTitles = [
+    "New Tasks",
+    "Done Tasks",
+    "Archive Tasks"
+  ];
+
+  static const List<Widget> screens = [
+    NewTasksScreen(),
+    DoneTasksScreen(),
+    ArchivedTasksScreen()
+  ];
+
+  static const List<BottomNavigationBarItem> iconsItems = [
+    BottomNavigationBarItem(
+        icon: Icon(Icons.menu),
+        label: "Tasks"),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.check_circle_outline),
+        label: "Done"),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.archive_outlined),
+        label: "Archive")
+  ];
+
+
+  void statesListener(TasksStates state) {
     if (state is AppInsertDatabaseState) {
       Navigator.pop(context);
       titleController.clear();
@@ -36,22 +67,22 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 
-  Widget _buildWidget(AppCubit cubit, AppStates state) {
+  Widget _buildWidget(TasksCubit cubit, TasksStates state) {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: Text(cubit.titles[cubit.currentIndex]),
+        title: Text(screensTitles[state.currentIndex]),
       ),
       body: ConditionalBuilder(
         condition: state is! AppGetDatabaseLoadingState,
-        builder: (context) => cubit.screens[cubit.currentIndex],
+        builder: (context) => screens[state.currentIndex],
         fallback: (context) => const Center(child: CircularProgressIndicator()),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (cubit.isBottomSheetShown) {
+          if (state.bottomSheetState!.isVisible) {
             if (formKey.currentState!.validate()) {
-              cubit.insertToDatabase(
+              cubit.repository.insertToDatabase(
                 title: titleController.text,
                 time: timeController.text,
                 date: dateController.text,
@@ -65,24 +96,24 @@ class _HomeScreenState extends State<HomeScreen> {
             )
                 .closed
                 .then((value) {
-              cubit.changeBottomSheetState(isShow: false, icon: Icons.edit);
+              cubit.toggleBottomSheet(isVisible: false, icon: Icons.edit);
             });
 
-            cubit.changeBottomSheetState(isShow: true, icon: Icons.add);
+            cubit.toggleBottomSheet(isVisible: true, icon: Icons.add);
           }
         },
-        child: Icon(cubit.fabIcon),
+        child: Icon(state.bottomSheetState!.icon),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: cubit.currentIndex,
+        currentIndex: state.currentIndex,
         onTap: (index) => cubit.changeIndex(index),
-        items: cubit.items,
+        items: iconsItems,
       ),
     );
   }
 
 
-  Widget _buildBottomSheet(AppCubit cubit) {
+  Widget _buildBottomSheet(TasksCubit cubit) {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(20.0),
@@ -91,15 +122,15 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            defaultFormField(
+            DefaultFormField(
               controller: titleController,
               type: TextInputType.text,
-              validator: (value) => validator(value!, 'Title'),
+              validator: (value) => FormValidators.sharedField(value!, 'Title'),
               label: 'Task Title',
               prefix: Icons.title,
             ),
-            const SizedBox(height: 15.0),
-            defaultFormField(
+            AppSpacers.vSmall,
+            DefaultFormField(
               controller: timeController,
               type: TextInputType.datetime,
               onTap: () async {
@@ -111,12 +142,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   timeController.text = pickedTime.format(context);
                 }
               },
-              validator: (value) => validator(value!, 'Time'),
+              validator: (value) => FormValidators.sharedField(value!, 'Time'),
               label: 'Task Time',
               prefix: Icons.watch_later_outlined,
             ),
-            const SizedBox(height: 15.0),
-            defaultFormField(
+            AppSpacers.vSmall,
+            DefaultFormField(
               controller: dateController,
               type: TextInputType.datetime,
               onTap: () async {
@@ -130,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   dateController.text = DateFormat.yMMMd().format(pickedDate);
                 }
               },
-              validator: (value) => validator(value!, 'Date'),
+              validator: (value) => FormValidators.sharedField(value!, 'Date'),
               label: 'Task Date',
               prefix: Icons.calendar_today,
             ),
@@ -143,16 +174,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AppCubit>(
+    return BlocProvider<TasksCubit>(
       create: (BuildContext context) =>
-      AppCubit()
-        ..createDatabase(),
-      child: BlocConsumer<AppCubit, AppStates>(
+          TasksCubit(TasksRepository()
+            ..createDatabase()),
+      child: BlocConsumer<TasksCubit, TasksStates>(
         listener: (context, state) {
           statesListener(state);
         },
         builder: (context, state) {
-          var cubit = AppCubit.get(context);
+          var cubit = TasksCubit.get(context);
           return _buildWidget(cubit, state);
         },
       ),
