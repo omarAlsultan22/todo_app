@@ -1,16 +1,16 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
-import 'package:todo_app/shared/components/validators/form_validators.dart';
-import 'package:todo_app/shared/components/widgets/default_form_field.dart';
-import 'package:todo_app/shared/local/repository/DatabaseRepository.dart';
-import 'package:todo_app/shared/components/widgets/spacers.dart';
+import 'package:todo_app/core/widgets/form/default_form_field.dart';
+import '../../data/repository_impl/local/database_repository.dart';
+import '../../core/utils/validators/form_validators.dart';
+import 'package:todo_app/core/widgets/app_spacers.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../screens/archived_tasks_screen.dart';
 import '../screens/done_tasks_screen.dart';
 import '../screens/new_tasks_screen.dart';
-import '../shared/cubit/tasks_cubit.dart';
 import 'package:flutter/material.dart';
-import '../shared/states/states.dart';
+import '../cubits/tasks_cubit.dart';
 import 'package:intl/intl.dart';
+import '../states/states.dart';
 
 
 class HomeScreen extends StatefulWidget {

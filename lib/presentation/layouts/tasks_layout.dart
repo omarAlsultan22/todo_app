@@ -1,8 +1,8 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
-import 'package:todo_app/models/task_model.dart';
-import 'package:todo_app/shared/components/widgets/states/init_state.dart';
-import '../shared/cubit/tasks_cubit.dart';
+import 'package:todo_app/core/widgets/init_state_widget.dart';
+import '../../data/models/task_model.dart';
 import 'package:flutter/material.dart';
+import '../cubits/tasks_cubit.dart';
 
 
 class TasksLayout extends StatelessWidget {
@@ -32,7 +32,7 @@ class TasksLayout extends StatelessWidget {
                     ),
                 itemCount: tasks.length),
         fallback: (context) =>
-            TasksInitStateWidget()
+            InitStateWidget()
     );
   }
 

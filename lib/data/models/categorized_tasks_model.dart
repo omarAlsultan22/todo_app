@@ -1,4 +1,4 @@
-import 'package:todo_app/models/task_model.dart';
+import 'package:todo_app/data/models/task_model.dart';
 
 
 class CategorizedTasks {

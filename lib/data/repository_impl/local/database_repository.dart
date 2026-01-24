@@ -1,10 +1,12 @@
 import 'package:sqflite/sqflite.dart';
+import '../../../domain/repository/repository.dart';
 
 
-class TasksRepository {
+class TasksRepository implements DataRepository{
 
   late Database database;
 
+  @override
   void createDatabase() {
     openDatabase(
       'todo.db',
@@ -36,6 +38,7 @@ class TasksRepository {
   }
 
 
+  @override
   void insertToDatabase({
     required String title,
     required String time,
@@ -56,11 +59,13 @@ class TasksRepository {
   }
 
 
+  @override
   Future <dynamic> getDataFromDatabase() {
     return database.rawQuery('SELECT * FROM tasks');
   }
 
 
+  @override
   Future<void> updateData({
     required String status,
     required int id,
@@ -73,6 +78,7 @@ class TasksRepository {
   }
 
 
+  @override
   Future <void> deleteData({
     required int id,
   }) async

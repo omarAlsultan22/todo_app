@@ -1,5 +1,5 @@
-import '../models/categorized_tasks_model.dart';
-import '../models/task_model.dart';
+import '../../../data/models/task_model.dart';
+import '../../../data/models/categorized_tasks_model.dart';
 
 
 class TasksTransformer {
