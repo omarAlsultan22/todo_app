@@ -1,14 +1,14 @@
-import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
-import 'package:todo_app/core/widgets/init_state_widget.dart';
-import '../../data/models/task_model.dart';
+import 'initial_state_widget.dart';
 import 'package:flutter/material.dart';
-import '../cubits/tasks_cubit.dart';
+import '../../cubits/tasks_cubit.dart';
+import '../../../data/models/task_model.dart';
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 
 
-class TasksLayout extends StatelessWidget {
+class TasksStateWidget extends StatelessWidget {
   final List<TaskModel> tasks;
 
-  const TasksLayout({required this.tasks, super.key});
+  const TasksStateWidget({required this.tasks, super.key});
 
 
   @override
@@ -32,7 +32,7 @@ class TasksLayout extends StatelessWidget {
                     ),
                 itemCount: tasks.length),
         fallback: (context) =>
-            InitStateWidget()
+            InitialStateWidget()
     );
   }
 

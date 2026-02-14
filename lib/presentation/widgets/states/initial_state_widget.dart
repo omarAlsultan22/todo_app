@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 
-class InitStateWidget extends StatelessWidget {
-  const InitStateWidget({super.key});
+class InitialStateWidget extends StatelessWidget {
+  const InitialStateWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
