@@ -15,7 +15,7 @@ class InitialStateWidget extends StatelessWidget {
             size: 100.0,
             color: Colors.grey[300],
           ),
-          Text(
+          const Text(
             'No Tasks Yet, Please Add Some Tasks',
             style: TextStyle(
               fontSize: 16.0,
