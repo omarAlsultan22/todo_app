@@ -25,7 +25,7 @@ class TasksRepository implements DataRepository{
             .then((value) {
           print('table created');
         }).catchError((error) {
-          print('Error When Creating Table ${error.toString()}');
+          throw('Error When Creating Table ${error.toString()}');
         });
       },
       onOpen: (database) {
@@ -44,16 +44,13 @@ class TasksRepository implements DataRepository{
     required String time,
     required String date,
   }) async {
+    final sql = 'INSERT INTO tasks(title, date, time, status) VALUES("$title", "$date", "$time", "new")';
     await database.transaction((txn) =>
-        txn
-            .rawInsert(
-          'INSERT INTO tasks(title, date, time, status) VALUES("$title", "$date", "$time", "new")',
-        )
+        txn.rawInsert(sql,)
             .then((value) {
           print('$value inserted successfully');
-          getDataFromDatabase();
         }).catchError((error) {
-          print('Error When Inserting New Record ${error.toString()}');
+          throw('Error When Inserting New Record ${error.toString()}');
         })
     );
   }
@@ -61,7 +58,8 @@ class TasksRepository implements DataRepository{
 
   @override
   Future <dynamic> getDataFromDatabase() {
-    return database.rawQuery('SELECT * FROM tasks');
+    const sql = 'SELECT * FROM tasks';
+    return database.rawQuery(sql);
   }
 
 
@@ -71,8 +69,9 @@ class TasksRepository implements DataRepository{
     required int id,
   }) async
   {
+    const sql = 'UPDATE tasks SET status = ? WHERE id = ?';
     database.rawUpdate(
-      'UPDATE tasks SET status = ? WHERE id = ?',
+      sql,
       [status, id],
     );
   }
@@ -83,6 +82,7 @@ class TasksRepository implements DataRepository{
     required int id,
   }) async
   {
-    database.rawDelete('DELETE FROM tasks WHERE id = ?', [id]);
+    const sql = 'DELETE FROM tasks WHERE id = ?';
+    database.rawDelete(sql, [id]);
   }
 }

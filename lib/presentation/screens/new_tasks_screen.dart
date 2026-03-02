@@ -1,4 +1,6 @@
-import '../states/states.dart';
+import 'package:flutter/material.dart';
+
+import '../states/tasks_state.dart';
 import '../cubits/tasks_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,12 +14,13 @@ class NewTasksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TasksCubit, TasksStates>(
+    return BlocBuilder<TasksCubit, TasksState>(
       builder: (context, state) {
         return state.when<Widget>(
-            initial: () => InitialStateWidget(),
-            loaded: (data) => TasksStateWidget(tasks: data!.newTasks),
-            error: (error) =>
+            onInitial: () => const InitialStateWidget(),
+            onLoading: () => const CircularProgressIndicator(),
+            onLoaded: (newData) => TasksStateWidget(tasks: newData!.newTasks),
+            onError: (error) =>
                 ErrorStateWidget(error: error,
                     onRetry: () => TasksCubit.get(context).loadTasks()));
       },

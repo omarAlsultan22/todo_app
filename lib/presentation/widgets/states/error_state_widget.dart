@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/core/constants/constants_texts.dart';
 
 
 class ErrorStateWidget extends StatelessWidget {
@@ -20,7 +21,7 @@ class ErrorStateWidget extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50.0),
-              child: Text('Error: $error'),
+              child: Text('${ConstantsTexts.error} $error'),
             ),
             const SizedBox(height: 30),
             ElevatedButton(

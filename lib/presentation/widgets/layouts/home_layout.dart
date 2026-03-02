@@ -1,6 +1,4 @@
-import '../app_spacers.dart';
 import 'package:intl/intl.dart';
-import '../../states/states.dart';
 import 'package:flutter/material.dart';
 import '../../cubits/tasks_cubit.dart';
 import '../form/default_form_field.dart';
@@ -9,18 +7,17 @@ import '../../screens/done_tasks_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../screens/archived_tasks_screen.dart';
 import '../../utils/validators/form_validators.dart';
-import '../../../data/repository_impl/local/database_repository.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeLayout extends StatefulWidget {
+  const HomeLayout({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeLayout> createState() => _HomeLayoutState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeLayoutState extends State<HomeLayout> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController titleController = TextEditingController();
@@ -53,36 +50,24 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
 
-  void statesListener(TasksStates state) {
-    if (state is AppInsertDatabaseState) {
-      Navigator.pop(context);
-      titleController.clear();
-      timeController.clear();
-      dateController.clear();
-    } else if (state is AppErrorDatabaseState) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${state.error}')),
-      );
-    }
-  }
-
-
-  Widget _buildWidget(TasksCubit cubit, TasksStates state) {
+  Widget _buildWidget() {
+    final cubit = context.read<TasksCubit>();
+    final state = cubit.state;
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
         title: Text(screensTitles[state.currentIndex]),
       ),
       body: ConditionalBuilder(
-        condition: state is! AppGetDatabaseLoadingState,
+        condition: !state.isLoading,
         builder: (context) => screens[state.currentIndex],
         fallback: (context) => const Center(child: CircularProgressIndicator()),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (state.bottomSheetState!.isVisible) {
+          if (state.isVisible) {
             if (formKey.currentState!.validate()) {
-              cubit.repository.insertToDatabase(
+              cubit.insertData(
                 title: titleController.text,
                 time: timeController.text,
                 date: dateController.text,
@@ -97,12 +82,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 .closed
                 .then((value) {
               cubit.toggleBottomSheet(isVisible: false, icon: Icons.edit);
+              titleController.clear();
+              timeController.clear();
+              dateController.clear();
             });
 
             cubit.toggleBottomSheet(isVisible: true, icon: Icons.add);
           }
         },
-        child: Icon(state.bottomSheetState!.icon),
+        child: Icon(state.icon),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: state.currentIndex,
@@ -114,6 +102,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
   Widget _buildBottomSheet(TasksCubit cubit) {
+    const task = 'Task';
+    const title = 'Title';
+    const time = 'Time';
+    const date = 'Date';
+    const Widget vSmall = SizedBox(height: 15.0);
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(20.0),
@@ -125,11 +118,11 @@ class _HomeScreenState extends State<HomeScreen> {
             DefaultFormField(
               controller: titleController,
               type: TextInputType.text,
-              validator: (value) => FormValidators.sharedField(value!, 'Title'),
-              label: 'Task Title',
+              validator: (value) => FormValidators.sharedField(value!, title),
+              label: '$task $title',
               prefix: Icons.title,
             ),
-            AppSpacers.vSmall,
+            vSmall,
             DefaultFormField(
               controller: timeController,
               type: TextInputType.datetime,
@@ -142,11 +135,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   timeController.text = pickedTime.format(context);
                 }
               },
-              validator: (value) => FormValidators.sharedField(value!, 'Time'),
-              label: 'Task Time',
+              validator: (value) => FormValidators.sharedField(value!, time),
+              label: '$task $time',
               prefix: Icons.watch_later_outlined,
             ),
-            AppSpacers.vSmall,
+            vSmall,
             DefaultFormField(
               controller: dateController,
               type: TextInputType.datetime,
@@ -161,8 +154,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   dateController.text = DateFormat.yMMMd().format(pickedDate);
                 }
               },
-              validator: (value) => FormValidators.sharedField(value!, 'Date'),
-              label: 'Task Date',
+              validator: (value) => FormValidators.sharedField(value!, date),
+              label: '$task $date',
               prefix: Icons.calendar_today,
             ),
           ],
@@ -171,22 +164,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<TasksCubit>(
-      create: (BuildContext context) =>
-          TasksCubit(TasksRepository()
-            ..createDatabase()),
-      child: BlocConsumer<TasksCubit, TasksStates>(
-        listener: (context, state) {
-          statesListener(state);
-        },
-        builder: (context, state) {
-          var cubit = TasksCubit.get(context);
-          return _buildWidget(cubit, state);
-        },
-      ),
-    );
+    return _buildWidget();
   }
 }

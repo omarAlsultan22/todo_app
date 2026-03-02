@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/core/constants/constants_numbers.dart';
 
 
 class InitialStateWidget extends StatelessWidget {
@@ -6,14 +7,15 @@ class InitialStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const oneHundred = 100.0;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.menu,
-            size: 100.0,
-            color: Colors.grey[300],
+            size: oneHundred,
+            color: Colors.grey[ConstantsNumbers.threeHundred],
           ),
           const Text(
             'No Tasks Yet, Please Add Some Tasks',

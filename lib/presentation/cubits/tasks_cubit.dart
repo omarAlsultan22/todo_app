@@ -1,15 +1,17 @@
-import '../states/states.dart';
+import '../states/tasks_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../utils/helpers/tasks_transformer.dart';
 import '../../data/models/ChangeBottomSheetStateModel.dart';
-import '../../data/repository_impl/local/database_repository.dart';
+import 'package:todo_app/domain/repository/repository.dart';
 
 
-class TasksCubit extends Cubit<TasksStates> {
-  final TasksRepository repository;
+class TasksCubit extends Cubit<TasksState> {
+  final DataRepository _repository;
 
-  TasksCubit(this.repository) : super(TasksStates.initial());
+  TasksCubit({required DataRepository repository})
+      : _repository = repository,
+        super(const TasksState());
 
   static TasksCubit get(context) => BlocProvider.of(context);
 
@@ -19,13 +21,34 @@ class TasksCubit extends Cubit<TasksStates> {
   }
 
 
+  Future<void> insertData({
+    required String title,
+    required String time,
+    required String date,
+  }) async {
+    try {
+      _repository.insertToDatabase(
+          title: title,
+          time: time,
+          date: date
+      );
+      emit(state.copyWith(isLoading: true));
+      loadTasks();
+    }
+    catch (e) {
+      emit(state.copyWith(error: e.toString(), isLoading: false));
+    }
+  }
+
+
   Future<void> loadTasks() async {
     try {
-      final data = await repository.getDataFromDatabase();
+      final data = await _repository.getDataFromDatabase();
       final categorizedTasks = TasksTransformer.categorizeTasks(data);
-      emit(TasksStates.success(categorizedTasks));
+      emit(
+          state.copyWith(categorizedTasks: categorizedTasks, isLoading: false));
     } catch (e) {
-      emit(TasksStates.failure(e.toString()));
+      emit(state.copyWith(error: e.toString(), isLoading: false));
     }
   }
 
@@ -35,12 +58,12 @@ class TasksCubit extends Cubit<TasksStates> {
     required int id
   }) {
     try {
-      repository.updateData(status: status, id: id).then((_) async {
+      _repository.updateData(status: status, id: id).then((_) async {
         loadTasks();
       });
     }
     catch (e) {
-      emit(TasksStates.failure(e.toString()));
+      emit(state.copyWith(error: e.toString()));
     }
   }
 
@@ -49,7 +72,7 @@ class TasksCubit extends Cubit<TasksStates> {
     required int id
   }) {
     try {
-      repository.deleteData(id: id).then((_) async {
+      _repository.deleteData(id: id).then((_) async {
         loadTasks();
       });
     }
@@ -71,7 +94,7 @@ class TasksCubit extends Cubit<TasksStates> {
       emit(state.copyWith(bottomSheetState: bottomSheetState));
     }
     catch (e) {
-      emit(TasksStates.failure(e.toString()));
+      emit(state.copyWith(error: e.toString()));
     }
   }
 }

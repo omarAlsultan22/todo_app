@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 
-@immutable
 class BottomSheetState {
   final bool isVisible;
   final IconData icon;

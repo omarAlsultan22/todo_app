@@ -2,6 +2,7 @@ import 'initial_state_widget.dart';
 import 'package:flutter/material.dart';
 import '../../cubits/tasks_cubit.dart';
 import '../../../data/models/task_model.dart';
+import 'package:todo_app/core/constants/constants_numbers.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 
 
@@ -13,6 +14,7 @@ class TasksStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const one = 1.0;
     return ConditionalBuilder(
         condition: tasks.isNotEmpty,
         builder: (context) =>
@@ -21,13 +23,13 @@ class TasksStateWidget extends StatelessWidget {
                     _buildTaskItem(tasks[index], context),
                 separatorBuilder: (context, index) =>
                     Padding(
-                      padding: EdgeInsetsDirectional.only(
+                      padding: const EdgeInsetsDirectional.only(
                         start: 20.0,
                       ),
                       child: Container(
                         width: double.infinity,
-                        height: 1.0,
-                        color: Colors.grey[300],
+                        height: one,
+                        color: Colors.grey[ConstantsNumbers.threeHundred],
                       ),
                     ),
                 itemCount: tasks.length),
@@ -38,15 +40,21 @@ class TasksStateWidget extends StatelessWidget {
 
 
   Widget _buildTaskItem(TaskModel model, BuildContext context) {
+    const done = 'done';
+    const archive = 'archive';
+
+    const radius = 40.0;
+    const sizedBox = SizedBox(width: 20.0);
+
     return Dismissible(key: Key(model.id.toString()),
       child: Row(
         children: [
           CircleAvatar(
-            radius: 40.0,
+            radius: radius,
             child: Text(model.time
             ),
           ),
-          SizedBox(width: 20.0,),
+          sizedBox,
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -57,7 +65,7 @@ class TasksStateWidget extends StatelessWidget {
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold
                   ),
-                ), SizedBox(width: 20.0,),
+                ), sizedBox,
                 Text(model.date,
                   style: TextStyle(
                       color: Colors.grey
@@ -66,19 +74,17 @@ class TasksStateWidget extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(
-            width: 20.0,
-          ),
+          sizedBox,
           IconButton(
               onPressed: () {
                 TasksCubit.get(context).updateData(
-                    status: 'done', id: model.id);
+                    status: done, id: model.id);
               },
               icon: Icon(Icons.check_box)),
           IconButton(
               onPressed: () {
                 TasksCubit.get(context).updateData(
-                    status: 'archive', id: model.id);
+                    status: archive, id: model.id);
               },
               icon: Icon(Icons.archive_outlined)),
         ],
