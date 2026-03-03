@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
-
 import '../states/tasks_state.dart';
 import '../cubits/tasks_cubit.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/states/tasks_state_widget.dart';
 import '../widgets/states/error_state_widget.dart';

@@ -14,7 +14,6 @@ class TasksStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const one = 1.0;
     return ConditionalBuilder(
         condition: tasks.isNotEmpty,
         builder: (context) =>
@@ -28,7 +27,7 @@ class TasksStateWidget extends StatelessWidget {
                       ),
                       child: Container(
                         width: double.infinity,
-                        height: one,
+                        height: 1.0,
                         color: Colors.grey[ConstantsNumbers.threeHundred],
                       ),
                     ),

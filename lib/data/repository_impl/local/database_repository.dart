@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import '../../../domain/repository/repository.dart';
 
 
-class TasksRepository implements DataRepository{
+class TasksRepository implements DataRepository {
 
   late Database database;
 
@@ -44,9 +44,9 @@ class TasksRepository implements DataRepository{
     required String time,
     required String date,
   }) async {
-    final sql = 'INSERT INTO tasks(title, date, time, status) VALUES("$title", "$date", "$time", "new")';
     await database.transaction((txn) =>
-        txn.rawInsert(sql,)
+        txn.rawInsert(
+          'INSERT INTO tasks(title, date, time, status) VALUES("$title", "$date", "$time", "new")',)
             .then((value) {
           print('$value inserted successfully');
         }).catchError((error) {
@@ -58,8 +58,7 @@ class TasksRepository implements DataRepository{
 
   @override
   Future <dynamic> getDataFromDatabase() {
-    const sql = 'SELECT * FROM tasks';
-    return database.rawQuery(sql);
+    return database.rawQuery('SELECT * FROM tasks');
   }
 
 
@@ -69,9 +68,8 @@ class TasksRepository implements DataRepository{
     required int id,
   }) async
   {
-    const sql = 'UPDATE tasks SET status = ? WHERE id = ?';
     database.rawUpdate(
-      sql,
+      'UPDATE tasks SET status = ? WHERE id = ?',
       [status, id],
     );
   }
@@ -82,7 +80,6 @@ class TasksRepository implements DataRepository{
     required int id,
   }) async
   {
-    const sql = 'DELETE FROM tasks WHERE id = ?';
-    database.rawDelete(sql, [id]);
+    database.rawDelete('DELETE FROM tasks WHERE id = ?', [id]);
   }
 }

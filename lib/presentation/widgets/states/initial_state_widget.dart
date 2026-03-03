@@ -7,14 +7,13 @@ class InitialStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const oneHundred = 100.0;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.menu,
-            size: oneHundred,
+            size: 100.0,
             color: Colors.grey[ConstantsNumbers.threeHundred],
           ),
           const Text(
