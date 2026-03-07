@@ -1,6 +1,5 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/core/constants/app_constants.dart';
 import '../../cubits/tasks_cubit.dart';
 import '../form/default_form_field.dart';
 import '../../screens/new_tasks_screen.dart';
@@ -8,6 +7,7 @@ import '../../screens/done_tasks_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../screens/archived_tasks_screen.dart';
 import '../../utils/validators/form_validators.dart';
+import 'package:todo_app/core/constants/app_constants.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 
 
@@ -19,26 +19,26 @@ class HomeLayout extends StatefulWidget {
 }
 
 class _HomeLayoutState extends State<HomeLayout> {
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController timeController = TextEditingController();
-  final TextEditingController dateController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
 
 
-  static const List<String> screensTitles = [
+  static const List<String> _screensTitles = [
     "New Tasks",
     "Done Tasks",
     "Archive Tasks"
   ];
 
-  static const List<Widget> screens = [
+  static const List<Widget> _screens = [
     NewTasksScreen(),
     DoneTasksScreen(),
     ArchivedTasksScreen()
   ];
 
-  static const List<BottomNavigationBarItem> iconsItems = [
+  static const List<BottomNavigationBarItem> _iconsItems = [
     BottomNavigationBarItem(
         icon: Icon(Icons.menu),
         label: "Tasks"),
@@ -55,27 +55,27 @@ class _HomeLayoutState extends State<HomeLayout> {
     final cubit = context.read<TasksCubit>();
     final state = cubit.state;
     return Scaffold(
-      key: scaffoldKey,
+      key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(screensTitles[state.currentIndex]),
+        title: Text(_screensTitles[state.currentIndex]),
       ),
       body: ConditionalBuilder(
         condition: !state.isLoading,
-        builder: (context) => screens[state.currentIndex],
+        builder: (context) => _screens[state.currentIndex],
         fallback: (context) => const Center(child: CircularProgressIndicator()),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (state.isVisible) {
-            if (formKey.currentState!.validate()) {
+            if (_formKey.currentState!.validate()) {
               cubit.insertData(
-                title: titleController.text,
-                time: timeController.text,
-                date: dateController.text,
+                title: _titleController.text,
+                time: _timeController.text,
+                date: _dateController.text,
               );
             }
           } else {
-            scaffoldKey.currentState
+            _scaffoldKey.currentState
                 ?.showBottomSheet(
                   (context) => _buildBottomSheet(cubit),
               elevation: 20.0,
@@ -83,9 +83,9 @@ class _HomeLayoutState extends State<HomeLayout> {
                 .closed
                 .then((value) {
               cubit.toggleBottomSheet(isVisible: false, icon: AppConstants.editIcon);
-              titleController.clear();
-              timeController.clear();
-              dateController.clear();
+              _titleController.clear();
+              _timeController.clear();
+              _dateController.clear();
             });
 
             cubit.toggleBottomSheet(isVisible: true, icon: Icons.add);
@@ -96,7 +96,7 @@ class _HomeLayoutState extends State<HomeLayout> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: state.currentIndex,
         onTap: (index) => cubit.changeIndex(index),
-        items: iconsItems,
+        items: _iconsItems,
       ),
     );
   }
@@ -112,12 +112,12 @@ class _HomeLayoutState extends State<HomeLayout> {
       color: Colors.white,
       padding: const EdgeInsets.all(20.0),
       child: Form(
-        key: formKey,
+        key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             DefaultFormField(
-              controller: titleController,
+              controller: _titleController,
               type: TextInputType.text,
               validator: (value) => FormValidators.sharedField(value!, title),
               label: '$task $title',
@@ -125,7 +125,7 @@ class _HomeLayoutState extends State<HomeLayout> {
             ),
             vSmall,
             DefaultFormField(
-              controller: timeController,
+              controller: _timeController,
               type: TextInputType.datetime,
               onTap: () async {
                 TimeOfDay? pickedTime = await showTimePicker(
@@ -133,7 +133,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                   initialTime: TimeOfDay.now(),
                 );
                 if (pickedTime != null) {
-                  timeController.text = pickedTime.format(context);
+                  _timeController.text = pickedTime.format(context);
                 }
               },
               validator: (value) => FormValidators.sharedField(value!, time),
@@ -142,7 +142,7 @@ class _HomeLayoutState extends State<HomeLayout> {
             ),
             vSmall,
             DefaultFormField(
-              controller: dateController,
+              controller: _dateController,
               type: TextInputType.datetime,
               onTap: () async {
                 DateTime? pickedDate = await showDatePicker(
@@ -152,7 +152,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                   lastDate: DateTime.now().add(const Duration(days: 365)),
                 );
                 if (pickedDate != null) {
-                  dateController.text = DateFormat.yMMMd().format(pickedDate);
+                  _dateController.text = DateFormat.yMMMd().format(pickedDate);
                 }
               },
               validator: (value) => FormValidators.sharedField(value!, date),

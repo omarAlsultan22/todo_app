@@ -11,7 +11,6 @@ class TasksStateWidget extends StatelessWidget {
 
   const TasksStateWidget({required this.tasks, super.key});
 
-
   @override
   Widget build(BuildContext context) {
     return ConditionalBuilder(

@@ -4,7 +4,7 @@ import '../../../domain/repository/repository.dart';
 
 class TasksRepository implements DataRepository {
 
-  late Database database;
+  late Database _database;
 
   @override
   void createDatabase() {
@@ -33,7 +33,7 @@ class TasksRepository implements DataRepository {
         print('database opened');
       },
     ).then((value) {
-      database = value;
+      _database = value;
     });
   }
 
@@ -44,7 +44,7 @@ class TasksRepository implements DataRepository {
     required String time,
     required String date,
   }) async {
-    await database.transaction((txn) =>
+    await _database.transaction((txn) =>
         txn.rawInsert(
           'INSERT INTO tasks(title, date, time, status) VALUES("$title", "$date", "$time", "new")',)
             .then((value) {
@@ -58,7 +58,7 @@ class TasksRepository implements DataRepository {
 
   @override
   Future <dynamic> getDataFromDatabase() {
-    return database.rawQuery('SELECT * FROM tasks');
+    return _database.rawQuery('SELECT * FROM tasks');
   }
 
 
@@ -68,7 +68,7 @@ class TasksRepository implements DataRepository {
     required int id,
   }) async
   {
-    database.rawUpdate(
+    _database.rawUpdate(
       'UPDATE tasks SET status = ? WHERE id = ?',
       [status, id],
     );
@@ -80,6 +80,6 @@ class TasksRepository implements DataRepository {
     required int id,
   }) async
   {
-    database.rawDelete('DELETE FROM tasks WHERE id = ?', [id]);
+    _database.rawDelete('DELETE FROM tasks WHERE id = ?', [id]);
   }
 }
