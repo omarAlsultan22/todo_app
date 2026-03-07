@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_constants.dart';
 
 
 class BottomSheetState {
@@ -7,7 +8,7 @@ class BottomSheetState {
 
   const BottomSheetState({
     this.isVisible = false,
-    this.icon = Icons.edit,
+    this.icon = AppConstants.editIcon,
   });
 
   BottomSheetState copyWith({

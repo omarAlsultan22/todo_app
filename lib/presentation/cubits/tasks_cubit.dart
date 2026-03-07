@@ -1,3 +1,5 @@
+import 'package:todo_app/core/constants/app_constants.dart';
+
 import '../states/tasks_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -89,7 +91,7 @@ class TasksCubit extends Cubit<TasksState> {
     try {
       final bottomSheetState = BottomSheetState(
         isVisible: isVisible,
-        icon: isVisible ? Icons.edit : Icons.close,
+        icon: isVisible ? AppConstants.editIcon: Icons.close,
       );
       emit(state.copyWith(bottomSheetState: bottomSheetState));
     }

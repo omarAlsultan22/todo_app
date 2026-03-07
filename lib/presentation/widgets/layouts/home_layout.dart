@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_app/core/constants/app_constants.dart';
 import '../../cubits/tasks_cubit.dart';
 import '../form/default_form_field.dart';
 import '../../screens/new_tasks_screen.dart';
@@ -81,7 +82,7 @@ class _HomeLayoutState extends State<HomeLayout> {
             )
                 .closed
                 .then((value) {
-              cubit.toggleBottomSheet(isVisible: false, icon: Icons.edit);
+              cubit.toggleBottomSheet(isVisible: false, icon: AppConstants.editIcon);
               titleController.clear();
               timeController.clear();
               dateController.clear();
