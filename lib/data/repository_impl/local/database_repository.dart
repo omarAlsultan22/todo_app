@@ -1,5 +1,6 @@
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 import '../../../domain/repository/repository.dart';
+import 'package:todo_app/data/repository_impl/local/encryption_keys_store.dart';
 
 
 class TasksRepository implements DataRepository {
@@ -7,9 +8,12 @@ class TasksRepository implements DataRepository {
   late Database _database;
 
   @override
-  void createDatabase() {
+  Future<void> createDatabase() async {
+    final password = await EncryptionKeysStore.getEncryptionKey();
+
     openDatabase(
       'todo.db',
+      password: password,
       version: 1,
       onCreate: (database, version) {
         // id integer
@@ -58,7 +62,7 @@ class TasksRepository implements DataRepository {
 
   @override
   Future <dynamic> getDataFromDatabase() {
-    return _database.rawQuery('SELECT * FROM tasks');
+    return _database.rawQuery('SELECT * FROM tasks',);
   }
 
 
