@@ -2,8 +2,8 @@ import '../states/tasks_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../utils/helpers/tasks_transformer.dart';
+import '../../domain/repositories/data_repository.dart';
 import '../../data/models/ChangeBottomSheetStateModel.dart';
-import 'package:todo_app/domain/repository/repository.dart';
 import 'package:todo_app/core/constants/app_constants.dart';
 
 

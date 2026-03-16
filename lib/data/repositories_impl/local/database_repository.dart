@@ -1,15 +1,21 @@
+import 'package:todo_app/domain/repositories/encryption_keys_repository.dart';
+import '../../../domain/repositories/data_repository.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
-import '../../../domain/repository/repository.dart';
-import 'package:todo_app/data/repository_impl/local/encryption_keys_store.dart';
 
 
 class TasksRepository implements DataRepository {
+  final EncryptionKeysRepository _repository;
+
+  TasksRepository({
+    required EncryptionKeysRepository repository
+  })
+      : _repository = repository;
 
   late Database _database;
 
   @override
   Future<void> createDatabase() async {
-    final password = await EncryptionKeysStore.getEncryptionKey();
+    final password = await _repository.getEncryptionKey();
 
     openDatabase(
       'todo.db',
