@@ -24,7 +24,12 @@ class HomeScreen extends StatelessWidget {
             TasksCubit(repository: tasksRepository),
         child: BlocBuilder<TasksCubit, TasksState>(
             builder: (context, state) {
-              return HomeLayout();
+              return HomeLayout(
+                  currentIndex: state.currentIndex,
+                  isVisible: state.isVisible,
+                  isLoading: state.isLoading,
+                  icon: state.icon
+              );
             }
         )
     );

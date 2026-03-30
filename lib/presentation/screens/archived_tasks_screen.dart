@@ -17,7 +17,8 @@ class ArchivedTasksScreen extends StatelessWidget {
         return state.when<Widget>(
             onInitial: () => const InitialStateWidget(),
             onLoading: () => const CircularProgressIndicator(),
-            onLoaded: (newData) => TasksStateWidget(tasks: newData!.archivedTasks),
+            onLoaded: (newData) =>
+                TasksStateWidget(tasks: newData!.archivedTasks),
             onError: (error) =>
                 ErrorStateWidget(error: error,
                     onRetry: () => TasksCubit.get(context).loadTasks()));

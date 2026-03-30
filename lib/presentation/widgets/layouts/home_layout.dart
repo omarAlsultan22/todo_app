@@ -12,7 +12,18 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 
 
 class HomeLayout extends StatefulWidget {
-  const HomeLayout({super.key});
+  final IconData icon;
+  final bool isLoading;
+  final bool isVisible;
+  final int currentIndex;
+
+  const HomeLayout({
+    required this.currentIndex,
+    required this.isVisible,
+    required this.isLoading,
+    required this.icon,
+    super.key
+  });
 
   @override
   State<HomeLayout> createState() => _HomeLayoutState();
@@ -65,20 +76,19 @@ class _HomeLayoutState extends State<HomeLayout> {
 
   Widget _buildWidget() {
     final cubit = context.read<TasksCubit>();
-    final state = cubit.state;
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(_screensTitles[state.currentIndex]),
+        title: Text(_screensTitles[widget.currentIndex]),
       ),
       body: ConditionalBuilder(
-        condition: !state.isLoading,
-        builder: (context) => _screens[state.currentIndex],
+        condition: widget.isLoading,
+        builder: (context) => _screens[widget.currentIndex],
         fallback: (context) => const Center(child: CircularProgressIndicator()),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (state.isVisible) {
+          if (widget.isVisible) {
             if (_formKey.currentState!.validate()) {
               cubit.insertData(
                 title: _titleController.text,
@@ -94,7 +104,8 @@ class _HomeLayoutState extends State<HomeLayout> {
             )
                 .closed
                 .then((value) {
-              cubit.toggleBottomSheet(isVisible: false, icon: AppConstants.editIcon);
+              cubit.toggleBottomSheet(
+                  isVisible: false, icon: AppConstants.editIcon);
               _titleController.clear();
               _timeController.clear();
               _dateController.clear();
@@ -103,10 +114,10 @@ class _HomeLayoutState extends State<HomeLayout> {
             cubit.toggleBottomSheet(isVisible: true, icon: Icons.add);
           }
         },
-        child: Icon(state.icon),
+        child: Icon(widget.icon),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: state.currentIndex,
+        currentIndex: widget.currentIndex,
         onTap: (index) => cubit.changeIndex(index),
         items: _iconsItems,
       ),
