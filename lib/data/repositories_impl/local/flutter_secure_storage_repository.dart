@@ -9,15 +9,17 @@ class FlutterSecureStorageRepository extends EncryptionKeysRepository {
   FlutterSecureStorageRepository({required FlutterSecureStorage flutterSecureStorage})
       : _flutterSecureStorage = flutterSecureStorage;
 
+  static const encryptionKey = 'encryptionKey';
+
   @override
   Future<void> saveEncryptionKey() async {
     final encryptionValue = EncryptionService.generateSecureKey();
     await _flutterSecureStorage.write(
-        key: 'encryptionKey', value: encryptionValue);
+        key: encryptionKey, value: encryptionValue);
   }
 
   @override
   Future<String?> getEncryptionKey() async {
-    return await _flutterSecureStorage.read(key: 'encryptionKey');
+    return await _flutterSecureStorage.read(key: encryptionKey);
   }
 }

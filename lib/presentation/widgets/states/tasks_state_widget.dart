@@ -22,7 +22,7 @@ class TasksStateWidget extends StatelessWidget {
                 separatorBuilder: (context, index) =>
                     Padding(
                       padding: const EdgeInsetsDirectional.only(
-                        start: 20.0,
+                        start: AppConstants.padding,
                       ),
                       child: Container(
                         width: double.infinity,

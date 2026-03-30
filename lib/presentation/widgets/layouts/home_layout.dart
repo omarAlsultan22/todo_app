@@ -25,6 +25,18 @@ class _HomeLayoutState extends State<HomeLayout> {
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
 
+  //texts
+  static const task = 'Task';
+  static const title = 'Title';
+  static const time = 'Time';
+  static const date = 'Date';
+
+  //spaces
+  static const _spacing = SizedBox(height: 15.0);
+  static const _paddingAll = AppConstants.padding;
+
+  //sizes
+  static const _elevationValue = _paddingAll;
 
   static const List<String> _screensTitles = [
     "New Tasks",
@@ -78,7 +90,7 @@ class _HomeLayoutState extends State<HomeLayout> {
             _scaffoldKey.currentState
                 ?.showBottomSheet(
                   (context) => _buildBottomSheet(cubit),
-              elevation: 20.0,
+              elevation: _elevationValue,
             )
                 .closed
                 .then((value) {
@@ -103,14 +115,9 @@ class _HomeLayoutState extends State<HomeLayout> {
 
 
   Widget _buildBottomSheet(TasksCubit cubit) {
-    const task = 'Task';
-    const title = 'Title';
-    const time = 'Time';
-    const date = 'Date';
-    const Widget vSmall = SizedBox(height: 15.0);
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(_paddingAll),
       child: Form(
         key: _formKey,
         child: Column(
@@ -123,7 +130,7 @@ class _HomeLayoutState extends State<HomeLayout> {
               label: '$task $title',
               prefix: Icons.title,
             ),
-            vSmall,
+            _spacing,
             DefaultFormField(
               controller: _timeController,
               type: TextInputType.datetime,
@@ -140,7 +147,7 @@ class _HomeLayoutState extends State<HomeLayout> {
               label: '$task $time',
               prefix: Icons.watch_later_outlined,
             ),
-            vSmall,
+            _spacing,
             DefaultFormField(
               controller: _dateController,
               type: TextInputType.datetime,
