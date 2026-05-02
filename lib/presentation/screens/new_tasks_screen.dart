@@ -23,7 +23,7 @@ class NewTasksScreen extends StatelessWidget {
                 ErrorStateWidget(error: error.message,
                     onRetry: () =>
                         TasksCubit.get(context).loadMoreData(
-                            UIStrings.newStatus)));
+                            UiStrings.newStatus)));
       },
     );
   }

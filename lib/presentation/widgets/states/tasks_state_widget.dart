@@ -25,12 +25,12 @@ class TasksStateWidget extends StatelessWidget {
                 separatorBuilder: (context, index) =>
                     Padding(
                       padding: const EdgeInsetsDirectional.only(
-                        start: UISizes.padding,
+                        start: UiSizes.padding,
                       ),
                       child: Container(
                         width: double.infinity,
                         height: 1.0,
-                        color: UIColors.gery_300,
+                        color: UiColors.gery_300,
                       ),
                     ),
                 itemCount: tasks.length),
@@ -63,7 +63,7 @@ class TasksStateWidget extends StatelessWidget {
                 ), _sizedBox,
                 Text(model.date,
                   style: TextStyle(
-                      color: UIColors.gery_500
+                      color: UiColors.gery_500
                   ),
                 ),
               ],

@@ -14,14 +14,14 @@ class InitialStateWidget extends StatelessWidget {
           Icon(
             Icons.menu,
             size: 100.0,
-            color: UIColors.gery_300,
+            color: UiColors.gery_300,
           ),
           const Text(
             'No Tasks Yet, Please Add Some Tasks',
             style: TextStyle(
               fontSize: 16.0,
               fontWeight: FontWeight.bold,
-              color: UIColors.gery_500,
+              color: UiColors.gery_500,
             ),
           ),
         ],

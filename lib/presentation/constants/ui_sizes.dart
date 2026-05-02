@@ -1,4 +1,4 @@
-mixin class UISizes {
+mixin class UiSizes {
   static const double padding = 20.0;
   static const int defaultPageSize = 15;
 }

@@ -42,7 +42,7 @@ class _HomeLayoutState extends State<HomeLayout> {
 
   //spaces
   static const _spacing = SizedBox(height: 15.0);
-  static const _paddingAll = UISizes.padding;
+  static const _paddingAll = UiSizes.padding;
 
   //sizes
   static const _elevationValue = _paddingAll;

@@ -25,8 +25,8 @@ class HomeScreen extends StatelessWidget {
       ..createDatabase()
       ..getDataFromDatabase(
           offset: AppSizes.none,
-          status: UIStrings.newStatus,
-          limit: UISizes.defaultPageSize
+          status: UiStrings.newStatus,
+          limit: UiSizes.defaultPageSize
       );
     final useCase = GetTasksUseCase(repository: repository);
     return BlocProvider<TasksCubit>(

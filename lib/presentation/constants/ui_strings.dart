@@ -1,7 +1,7 @@
 import 'package:todo_app/constants/app_strings.dart';
 
 
-abstract class UIStrings {
+abstract class UiStrings {
   static const String newStatus = AppStrings.newStatus;
   static const String doneStatus = 'done';
   static const archivedStatus = 'archived';

@@ -24,7 +24,7 @@ class ArchivedTasksScreen extends StatelessWidget {
                 ErrorStateWidget(error: error.message,
                     onRetry: () =>
                         TasksCubit.get(context).loadMoreData(
-                            UIStrings.archivedStatus)));
+                            UiStrings.archivedStatus)));
       },
     );
   }

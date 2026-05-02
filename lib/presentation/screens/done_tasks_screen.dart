@@ -23,7 +23,7 @@ class DoneTasksScreen extends StatelessWidget {
                 ErrorStateWidget(error: error.message,
                     onRetry: () =>
                         TasksCubit.get(context).loadMoreData(
-                            UIStrings.doneStatus)));
+                            UiStrings.doneStatus)));
       },
     );
   }

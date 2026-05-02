@@ -32,12 +32,12 @@ class TasksCubit extends Cubit<TasksState> {
               i: const CategoryData()
           },
           subState: InitialState(),
-          statusList: UIStrings.statusList,
+          statusList: UiStrings.statusList,
           bottomSheetState: const BottomSheetState()));
 
   static TasksCubit get(context) => BlocProvider.of(context);
 
-  static const _limit = UISizes.defaultPageSize;
+  static const _limit = UiSizes.defaultPageSize;
 
   Future<void> _loadTasks(String status) async {
     try {
