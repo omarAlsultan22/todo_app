@@ -2,7 +2,8 @@ import 'initial_state_widget.dart';
 import 'package:flutter/material.dart';
 import '../../cubits/tasks_cubit.dart';
 import '../../../data/models/task_model.dart';
-import 'package:todo_app/core/constants/app_constants.dart';
+import 'package:todo_app/presentation/constants/ui_sizes.dart';
+import 'package:todo_app/presentation/constants/ui_colors.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 
 
@@ -10,6 +11,8 @@ class TasksStateWidget extends StatelessWidget {
   final List<TaskModel> tasks;
 
   const TasksStateWidget({required this.tasks, super.key});
+
+  static const _sizedBox = SizedBox(width: 20.0);
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +25,12 @@ class TasksStateWidget extends StatelessWidget {
                 separatorBuilder: (context, index) =>
                     Padding(
                       padding: const EdgeInsetsDirectional.only(
-                        start: AppConstants.padding,
+                        start: UISizes.padding,
                       ),
                       child: Container(
                         width: double.infinity,
                         height: 1.0,
-                        color: AppConstants.gery_300,
+                        color: UIColors.gery_300,
                       ),
                     ),
                 itemCount: tasks.length),
@@ -38,8 +41,6 @@ class TasksStateWidget extends StatelessWidget {
 
 
   Widget _buildTaskItem(TaskModel model, BuildContext context) {
-    const sizedBox = SizedBox(width: 20.0);
-
     return Dismissible(key: Key(model.id.toString()),
       child: Row(
         children: [
@@ -48,7 +49,7 @@ class TasksStateWidget extends StatelessWidget {
             child: Text(model.time
             ),
           ),
-          sizedBox,
+          _sizedBox,
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -59,16 +60,16 @@ class TasksStateWidget extends StatelessWidget {
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold
                   ),
-                ), sizedBox,
+                ), _sizedBox,
                 Text(model.date,
                   style: TextStyle(
-                      color: Colors.grey
+                      color: UIColors.gery_500
                   ),
                 ),
               ],
             ),
           ),
-          sizedBox,
+          _sizedBox,
           IconButton(
               onPressed: () {
                 TasksCubit.get(context).updateData(

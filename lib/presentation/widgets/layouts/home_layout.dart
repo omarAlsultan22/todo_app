@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_app/constants/app_icons.dart';
+import 'package:todo_app/presentation/constants/ui_sizes.dart';
 import '../../cubits/tasks_cubit.dart';
 import '../form/default_form_field.dart';
 import '../../screens/new_tasks_screen.dart';
@@ -7,20 +9,16 @@ import '../../screens/done_tasks_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../screens/archived_tasks_screen.dart';
 import '../../utils/validators/form_validators.dart';
-import 'package:todo_app/core/constants/app_constants.dart';
-import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 
 
 class HomeLayout extends StatefulWidget {
   final IconData icon;
-  final bool isLoading;
   final bool isVisible;
   final int currentIndex;
 
   const HomeLayout({
     required this.currentIndex,
     required this.isVisible,
-    required this.isLoading,
     required this.icon,
     super.key
   });
@@ -31,10 +29,10 @@ class HomeLayout extends StatefulWidget {
 
 class _HomeLayoutState extends State<HomeLayout> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final TextEditingController _titleController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   //texts
   static const task = 'Task';
@@ -44,7 +42,7 @@ class _HomeLayoutState extends State<HomeLayout> {
 
   //spaces
   static const _spacing = SizedBox(height: 15.0);
-  static const _paddingAll = AppConstants.padding;
+  static const _paddingAll = UISizes.padding;
 
   //sizes
   static const _elevationValue = _paddingAll;
@@ -81,11 +79,7 @@ class _HomeLayoutState extends State<HomeLayout> {
       appBar: AppBar(
         title: Text(_screensTitles[widget.currentIndex]),
       ),
-      body: ConditionalBuilder(
-        condition: widget.isLoading,
-        builder: (context) => _screens[widget.currentIndex],
-        fallback: (context) => const Center(child: CircularProgressIndicator()),
-      ),
+      body: _screens[widget.currentIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (widget.isVisible) {
@@ -105,7 +99,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                 .closed
                 .then((value) {
               cubit.toggleBottomSheet(
-                  isVisible: false, icon: AppConstants.editIcon);
+                  isVisible: false, icon: AppIcons.editIcon);
               _titleController.clear();
               _timeController.clear();
               _dateController.clear();
@@ -118,7 +112,7 @@ class _HomeLayoutState extends State<HomeLayout> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: widget.currentIndex,
-        onTap: (index) => cubit.changeIndex(index),
+        onTap: (index) => cubit.changeScreen(index),
         items: _iconsItems,
       ),
     );

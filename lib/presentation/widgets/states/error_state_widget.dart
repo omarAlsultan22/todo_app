@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 
 class ErrorStateWidget extends StatelessWidget {
-  final String error;
-  final VoidCallback onRetry;
+  final String? error;
+  final VoidCallback? onRetry;
 
   const ErrorStateWidget({
     super.key,
-    required this.error,
-    required this.onRetry,
+    this.error,
+    this.onRetry,
   });
 
   @override

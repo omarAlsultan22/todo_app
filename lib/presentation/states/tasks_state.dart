@@ -1,55 +1,77 @@
 import 'package:flutter/widgets.dart';
-import '../../data/models/categorized_tasks_model.dart';
+import 'base/main_app_sub_state.dart';
+import '../../data/models/category_data.dart';
+import '../../errors/exceptions/base/app_exception.dart';
 import '../../data/models/ChangeBottomSheetStateModel.dart';
 
 
 class TasksState {
-  final CategorizedTasks? categorizedTasks;
   final BottomSheetState? bottomSheetState;
-  final int currentIndex;
-  final bool isLoading;
-  final String? error;
+  final Map<int, CategoryData> tabsData;
+  final MainAppSubState subState;
+  final List<String>? statusList;
+  final int currentTabIndex;
 
   const TasksState({
-    this.categorizedTasks,
-    this.bottomSheetState,
-    this.currentIndex = 0,
-    this.isLoading = false,
-    this.error,
+    required this.bottomSheetState,
+    required this.currentTabIndex,
+    required this.tabsData,
+    required this.subState,
+    this.statusList
   });
 
-  bool get isVisible => bottomSheetState!.isVisible;
+  CategoryData? get currentTabData => tabsData[currentTabIndex];
+
+  bool get productsIsEmpty => currentTabData!.productsIsEmpty;
+
+  bool get hasMore => currentTabData!.hasMore;
+
+  int get length => currentTabData!.length;
+
+  int get offset => currentTabData!.offset;
 
   IconData get icon => bottomSheetState!.icon;
 
+  bool get isVisible => bottomSheetState!.isVisible;
+
+  String get status => statusList![currentTabIndex];
+
+  TasksState updateTab(int index, CategoryData newTabData) {
+    return copyWith(
+        tabsData: {
+          ...tabsData,
+          index: newTabData,
+        }
+    );
+  }
+
   TasksState copyWith({
-    CategorizedTasks? categorizedTasks,
     BottomSheetState? bottomSheetState,
-    int? currentIndex,
-    bool? isLoading,
-    String? error,
+    Map<int, CategoryData>? tabsData,
+
+    MainAppSubState? subState,
+    int? currentTabIndex,
   }) {
     return TasksState(
-      categorizedTasks: categorizedTasks ?? this.categorizedTasks,
+      subState: subState ?? this.subState,
+      tabsData: tabsData ?? this.tabsData,
+
       bottomSheetState: bottomSheetState ?? this.bottomSheetState,
-      currentIndex: currentIndex ?? this.currentIndex,
-      isLoading: isLoading ?? this.isLoading,
-      error: error ?? this.error,
+      currentTabIndex: currentTabIndex ?? this.currentTabIndex,
     );
   }
 
   R when<R>({
     required R Function() onInitial,
     required R Function() onLoading,
-    required R Function(CategorizedTasks? tasks) onLoaded,
-    required R Function(String error) onError,
+    required R Function(CategoryData?) onLoaded,
+    required R Function(AppException) onError,
   }) {
-    if (error != null) {
-      return onError(error!);
-    }
-    if (categorizedTasks != null) {
-      return onLoaded(categorizedTasks!);
-    }
-    return onInitial();
+    return subState.when(
+        onInitial: onInitial,
+        onLoading: onLoading,
+        onLoaded: () => onLoaded(currentTabData),
+        onError: (failure) => onError(failure)
+    );
   }
 }

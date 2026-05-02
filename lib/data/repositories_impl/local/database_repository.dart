@@ -1,6 +1,8 @@
-import 'package:todo_app/domain/repositories/encryption_keys_repository.dart';
-import '../../../domain/repositories/data_repository.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'package:todo_app/constants/app_strings.dart';
+import 'package:todo_app/data/constants/data_strings.dart';
+import '../../../domain/repositories/data_repository.dart';
+import 'package:todo_app/domain/repositories/encryption_keys_repository.dart';
 
 
 class TasksRepository implements DataRepository {
@@ -13,15 +15,23 @@ class TasksRepository implements DataRepository {
 
   late Database _database;
 
+  static const _text = 'TEXT';
+  static const _tasks = 'tasks';
+  static const _id = DataStrings.id;
+  static const _time = DataStrings.time;
+  static const _date = DataStrings.date;
+  static const _title = DataStrings.title;
+  static const _status = DataStrings.status;
+
   @override
   Future<void> createDatabase() async {
     final password = await _repository.getEncryptionKey();
 
     openDatabase(
       'todo.db',
-      password: password,
       version: 1,
-      onCreate: (database, version) {
+      password: password,
+      onCreate: (database, version) async {
         // id integer
         // title String
         // date String
@@ -31,7 +41,8 @@ class TasksRepository implements DataRepository {
         print('database created');
         database
             .execute(
-            'CREATE TABLE tasks (id INTEGER PRIMARY KEY, title TEXT, date TEXT, time TEXT, status TEXT)')
+            'CREATE TABLE $_tasks ('
+                '$_id INTEGER PRIMARY KEY, $_title $_text, $_date $_text, $_time $_text, $_status $_text)')
             .then((value) {
           print('table created');
         }).catchError((error) {
@@ -39,7 +50,6 @@ class TasksRepository implements DataRepository {
         });
       },
       onOpen: (database) {
-        getDataFromDatabase();
         print('database opened');
       },
     ).then((value) {
@@ -47,16 +57,16 @@ class TasksRepository implements DataRepository {
     });
   }
 
-
   @override
-  void insertToDatabase({
+  Future<void> insertToDatabase({
     required String title,
     required String time,
     required String date,
   }) async {
     await _database.transaction((txn) =>
         txn.rawInsert(
-          'INSERT INTO tasks(title, date, time, status) VALUES("$title", "$date", "$time", "new")',)
+            'INSERT INTO $_tasks ($_title, $_date, $_time, $_status) VALUES("$title", "$date", "$time", "${AppStrings
+                .newStatus}")')
             .then((value) {
           print('$value inserted successfully');
         }).catchError((error) {
@@ -65,31 +75,51 @@ class TasksRepository implements DataRepository {
     );
   }
 
-
   @override
-  Future <dynamic> getDataFromDatabase() {
-    return _database.rawQuery('SELECT * FROM tasks',);
+  Future<List<Map<String, dynamic>>> getDataFromDatabase({
+    required int limit,
+    required int offset,
+    required String status,
+  }) async {
+    try {
+      return await _database.rawQuery(
+          'SELECT * FROM $_tasks WHERE $_status = ? LIMIT ? OFFSET ?',
+          [status, limit, offset]
+      );
+    }
+    catch (e) {
+      rethrow;
+    }
   }
 
-
   @override
-  Future<void> updateData({
+  Future<void> updateInDatabase({
     required String status,
     required int id,
   }) async
   {
-    _database.rawUpdate(
-      'UPDATE tasks SET status = ? WHERE id = ?',
-      [status, id],
-    );
+    try {
+      _database.rawUpdate(
+        'UPDATE $_tasks SET $_status = ? WHERE $_id = ?',
+        [status, id],
+      );
+    }
+    catch (e) {
+      rethrow;
+    }
   }
 
-
   @override
-  Future <void> deleteData({
+  Future <void> deleteFromDatabase({
     required int id,
   }) async
   {
-    _database.rawDelete('DELETE FROM tasks WHERE id = ?', [id]);
+    try {
+      _database.rawDelete('DELETE FROM $_tasks WHERE $_id = ?', [id]);
+    }
+    catch (e) {
+      rethrow;
+    }
   }
 }
+

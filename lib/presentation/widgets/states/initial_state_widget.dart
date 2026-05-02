@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/core/constants/app_constants.dart';
+import 'package:todo_app/presentation/constants/ui_colors.dart';
 
 
 class InitialStateWidget extends StatelessWidget {
@@ -14,14 +14,14 @@ class InitialStateWidget extends StatelessWidget {
           Icon(
             Icons.menu,
             size: 100.0,
-            color: AppConstants.gery_300,
+            color: UIColors.gery_300,
           ),
           const Text(
             'No Tasks Yet, Please Add Some Tasks',
             style: TextStyle(
               fontSize: 16.0,
               fontWeight: FontWeight.bold,
-              color: Colors.grey,
+              color: UIColors.gery_500,
             ),
           ),
         ],

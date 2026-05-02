@@ -1,3 +1,5 @@
+import 'package:todo_app/data/constants/data_strings.dart';
+
 class TaskModel {
   final int id;
   final String status;
@@ -15,10 +17,10 @@ class TaskModel {
 
   factory TaskModel.fromJson(Map<String, dynamic> toJson){
     return TaskModel(
-        id: toJson['id'] ?? 0,
-        status: toJson['status'] ?? '',
-        title: toJson['title'] ?? '',
-        time: toJson['time'] ?? '',
-        date: toJson['date'] ?? '');
+        id: toJson[DataStrings.id] ?? 0,
+        status: toJson[DataStrings.status] ?? '',
+        title: toJson[DataStrings.title] ?? '',
+        time: toJson[DataStrings.time] ?? '',
+        date: toJson[DataStrings.date] ?? '');
   }
 }

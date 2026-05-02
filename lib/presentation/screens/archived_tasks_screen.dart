@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/states/tasks_state_widget.dart';
 import '../widgets/states/error_state_widget.dart';
 import '../widgets/states/initial_state_widget.dart';
+import 'package:todo_app/presentation/constants/ui_strings.dart';
 
 
 class ArchivedTasksScreen extends StatelessWidget {
@@ -18,10 +19,12 @@ class ArchivedTasksScreen extends StatelessWidget {
             onInitial: () => const InitialStateWidget(),
             onLoading: () => const CircularProgressIndicator(),
             onLoaded: (newData) =>
-                TasksStateWidget(tasks: newData!.archivedTasks),
+                TasksStateWidget(tasks: newData!.products),
             onError: (error) =>
-                ErrorStateWidget(error: error,
-                    onRetry: () => TasksCubit.get(context).loadTasks()));
+                ErrorStateWidget(error: error.message,
+                    onRetry: () =>
+                        TasksCubit.get(context).loadMoreData(
+                            UIStrings.archivedStatus)));
       },
     );
   }
