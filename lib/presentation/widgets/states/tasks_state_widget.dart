@@ -73,18 +73,18 @@ class TasksStateWidget extends StatelessWidget {
           IconButton(
               onPressed: () {
                 TasksCubit.get(context).updateData(
-                    status: 'done', id: model.id);
+                    status: 'done', id: model.id, context: context);
               },
               icon: Icon(Icons.check_box)),
           IconButton(
               onPressed: () {
                 TasksCubit.get(context).updateData(
-                    status: 'archive', id: model.id);
+                    status: 'archive', id: model.id, context: context);
               },
               icon: Icon(Icons.archive_outlined)),
         ],
       ), onDismissed: (direction) {
-        TasksCubit.get(context).deleteData(id: model.id);
+        TasksCubit.get(context).deleteData(id: model.id, context: context);
       },
     );
   }

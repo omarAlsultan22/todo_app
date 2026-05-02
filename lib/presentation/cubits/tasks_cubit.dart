@@ -39,20 +39,22 @@ class TasksCubit extends Cubit<TasksState> {
 
   static const _limit = UiSizes.defaultPageSize;
 
+  void _showMessage({
+    required AppException error,
+    required BuildContext context
+  }) =>
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())));
+
   Future<void> _loadTasks(String status) async {
-    try {
-      final tasks = await _useCase.execute(
-          limit: _limit,
-          status: status,
-          offset: state.offset + _limit
-      );
-      emit(
-          state.updateTab(state.currentTabIndex, tasks)
-              .copyWith(subState: SuccessState()));
-    } on AppException catch (e) {
-      final failure = ErrorHandler.handleException(e);
-      emit(state.copyWith(subState: ErrorState(failure: failure)));
-    }
+    final tasks = await _useCase.execute(
+        limit: _limit,
+        status: status,
+        offset: state.offset + _limit
+    );
+    emit(
+        state.updateTab(state.currentTabIndex, tasks)
+            .copyWith(subState: SuccessState()));
   }
 
   Future<void> changeScreen(int index) async {
@@ -61,13 +63,20 @@ class TasksCubit extends Cubit<TasksState> {
 
     emit(state.copyWith(subState: LoadingState()));
 
-    await _loadTasks(state.status);
+    try {
+      await _loadTasks(state.status);
+    }
+    on AppException catch (e) {
+      final failure = ErrorHandler.handleException(e);
+      emit(state.copyWith(subState: ErrorState(failure: failure)));
+    }
   }
 
   Future<void> insertData({
     required String title,
     required String time,
     required String date,
+    required BuildContext context
   }) async {
     try {
       await _repository.insertToDatabase(
@@ -82,18 +91,26 @@ class TasksCubit extends Cubit<TasksState> {
     }
     on AppException catch (e) {
       final failure = ErrorHandler.handleException(e);
-      emit(state.copyWith(subState: ErrorState(failure: failure)));
+      _showMessage(error: failure, context: context);
     }
   }
 
   Future<void> loadMoreData(String status) async {
     if (!state.hasMore) return;
-    await _loadTasks(status);
+    try {
+      await _loadTasks(status);
+    }
+    catch (e) {
+      Future.delayed(const Duration(seconds: 3), () {
+        loadMoreData(status);
+      });
+    }
   }
 
   void updateData({
     required int id,
-    required String status
+    required String status,
+    required BuildContext context
   }) {
     try {
       _repository.updateInDatabase(status: status, id: id).then((_) async {
@@ -102,19 +119,20 @@ class TasksCubit extends Cubit<TasksState> {
     }
     on AppException catch (e) {
       final failure = ErrorHandler.handleException(e);
-      emit(state.copyWith(subState: ErrorState(failure: failure)));
+      _showMessage(error: failure, context: context);
     }
   }
 
   void deleteData({
     required int id,
+    required BuildContext context,
   }) {
     try {
       _repository.deleteFromDatabase(id: id);
     }
     on AppException catch (e) {
       final failure = ErrorHandler.handleException(e);
-      emit(state.copyWith(subState: ErrorState(failure: failure)));
+      _showMessage(error: failure, context: context);
     }
   }
 
@@ -122,16 +140,10 @@ class TasksCubit extends Cubit<TasksState> {
     required bool isVisible,
     required IconData icon
   }) {
-    try {
-      final bottomSheetState = BottomSheetState(
-        isVisible: isVisible,
-        icon: isVisible ? AppIcons.editIcon : Icons.close,
-      );
-      emit(state.copyWith(bottomSheetState: bottomSheetState));
-    }
-    on AppException catch (e) {
-      final failure = ErrorHandler.handleException(e);
-      emit(state.copyWith(subState: ErrorState(failure: failure)));
-    }
+    final bottomSheetState = BottomSheetState(
+      isVisible: isVisible,
+      icon: isVisible ? AppIcons.editIcon : Icons.close,
+    );
+    emit(state.copyWith(bottomSheetState: bottomSheetState));
   }
 }

@@ -85,6 +85,7 @@ class _HomeLayoutState extends State<HomeLayout> {
           if (widget.isVisible) {
             if (_formKey.currentState!.validate()) {
               cubit.insertData(
+                context: context,
                 title: _titleController.text,
                 time: _timeController.text,
                 date: _dateController.text,
