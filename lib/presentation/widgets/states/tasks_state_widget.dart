@@ -30,7 +30,7 @@ class TasksStateWidget extends StatelessWidget {
                       child: Container(
                         width: double.infinity,
                         height: 1.0,
-                        color: UiColors.gery_300,
+                        color: UiColors.lightGrey,
                       ),
                     ),
                 itemCount: tasks.length),
@@ -63,7 +63,7 @@ class TasksStateWidget extends StatelessWidget {
                 ), _spacingHorizontal,
                 Text(model.date,
                   style: TextStyle(
-                      color: UiColors.gery_500
+                      color: UiColors.primaryGray
                   ),
                 ),
               ],
