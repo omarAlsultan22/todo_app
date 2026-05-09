@@ -12,7 +12,7 @@ class TasksStateWidget extends StatelessWidget {
 
   const TasksStateWidget({required this.tasks, super.key});
 
-  static const _sizedBox = SizedBox(width: 20.0);
+  static const _spacingHorizontal = SizedBox(width: 20.0);
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class TasksStateWidget extends StatelessWidget {
             child: Text(model.time
             ),
           ),
-          _sizedBox,
+          _spacingHorizontal,
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -60,7 +60,7 @@ class TasksStateWidget extends StatelessWidget {
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold
                   ),
-                ), _sizedBox,
+                ), _spacingHorizontal,
                 Text(model.date,
                   style: TextStyle(
                       color: UiColors.gery_500
@@ -69,7 +69,7 @@ class TasksStateWidget extends StatelessWidget {
               ],
             ),
           ),
-          _sizedBox,
+          _spacingHorizontal,
           IconButton(
               onPressed: () {
                 TasksCubit.get(context).updateData(

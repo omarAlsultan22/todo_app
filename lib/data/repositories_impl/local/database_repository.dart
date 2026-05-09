@@ -1,5 +1,4 @@
 import 'package:sqflite_sqlcipher/sqflite.dart';
-import 'package:todo_app/constants/app_strings.dart';
 import 'package:todo_app/data/constants/data_strings.dart';
 import '../../../domain/repositories/data_repository.dart';
 import 'package:todo_app/domain/repositories/encryption_keys_repository.dart';
@@ -65,8 +64,7 @@ class TasksRepository implements DataRepository {
   }) async {
     await _database.transaction((txn) =>
         txn.rawInsert(
-            'INSERT INTO $_tasks ($_title, $_date, $_time, $_status) VALUES("$title", "$date", "$time", "${AppStrings
-                .newStatus}")')
+            'INSERT INTO $_tasks ($_title, $_date, $_time, $_status) VALUES("$title", "$date", "$time", "new")')
             .then((value) {
           print('$value inserted successfully');
         }).catchError((error) {

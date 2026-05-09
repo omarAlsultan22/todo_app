@@ -1,14 +1,14 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/constants/app_icons.dart';
-import 'package:todo_app/presentation/constants/ui_sizes.dart';
 import '../../cubits/tasks_cubit.dart';
 import '../form/default_form_field.dart';
 import '../../screens/new_tasks_screen.dart';
 import '../../screens/done_tasks_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../screens/archived_tasks_screen.dart';
+import 'package:todo_app/constants/app_icons.dart';
 import '../../utils/validators/form_validators.dart';
+import 'package:todo_app/presentation/constants/ui_sizes.dart';
 
 
 class HomeLayout extends StatefulWidget {
@@ -41,11 +41,7 @@ class _HomeLayoutState extends State<HomeLayout> {
   static const date = 'Date';
 
   //spaces
-  static const _spacing = SizedBox(height: 15.0);
-  static const _paddingAll = UiSizes.padding;
-
-  //sizes
-  static const _elevationValue = _paddingAll;
+  static const _spacingVertical = SizedBox(height: 15.0);
 
   static const List<String> _screensTitles = [
     "New Tasks",
@@ -95,7 +91,7 @@ class _HomeLayoutState extends State<HomeLayout> {
             _scaffoldKey.currentState
                 ?.showBottomSheet(
                   (context) => _buildBottomSheet(cubit),
-              elevation: _elevationValue,
+              elevation: UiSizes.padding,
             )
                 .closed
                 .then((value) {
@@ -123,7 +119,7 @@ class _HomeLayoutState extends State<HomeLayout> {
   Widget _buildBottomSheet(TasksCubit cubit) {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.all(_paddingAll),
+      padding: const EdgeInsets.all(UiSizes.padding),
       child: Form(
         key: _formKey,
         child: Column(
@@ -136,7 +132,7 @@ class _HomeLayoutState extends State<HomeLayout> {
               label: '$task $title',
               prefix: Icons.title,
             ),
-            _spacing,
+            _spacingVertical,
             DefaultFormField(
               controller: _timeController,
               type: TextInputType.datetime,
@@ -153,7 +149,7 @@ class _HomeLayoutState extends State<HomeLayout> {
               label: '$task $time',
               prefix: Icons.watch_later_outlined,
             ),
-            _spacing,
+            _spacingVertical,
             DefaultFormField(
               controller: _dateController,
               type: TextInputType.datetime,
