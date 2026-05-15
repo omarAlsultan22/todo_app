@@ -66,9 +66,13 @@ class TasksCubit extends Cubit<TasksState> {
     try {
       await _loadTasks(state.status);
     }
-    on AppException catch (e) {
-      final failure = ErrorHandler.handleException(e);
-      emit(state.copyWith(subState: ErrorState(failure: failure)));
+    catch (e, stackTrace) {
+      final errorHandler = ErrorHandler(
+          error: e,
+          stackTrace: stackTrace
+      );
+      final exception = errorHandler.handleException();
+      emit(state.copyWith(subState: ErrorState(failure: exception)));
     }
   }
 
@@ -89,9 +93,13 @@ class TasksCubit extends Cubit<TasksState> {
         }
       });
     }
-    on AppException catch (e) {
-      final failure = ErrorHandler.handleException(e);
-      _showMessage(error: failure, context: context);
+    catch (e, stackTrace) {
+      final errorHandler = ErrorHandler(
+          error: e,
+          stackTrace: stackTrace
+      );
+      final exception = errorHandler.handleException();
+      _showMessage(error: exception, context: context);
     }
   }
 
@@ -117,9 +125,13 @@ class TasksCubit extends Cubit<TasksState> {
         await loadMoreData(status);
       });
     }
-    on AppException catch (e) {
-      final failure = ErrorHandler.handleException(e);
-      _showMessage(error: failure, context: context);
+    catch (e, stackTrace) {
+      final errorHandler = ErrorHandler(
+          error: e,
+          stackTrace: stackTrace
+      );
+      final exception = errorHandler.handleException();
+      _showMessage(error: exception, context: context);
     }
   }
 
@@ -130,9 +142,13 @@ class TasksCubit extends Cubit<TasksState> {
     try {
       _repository.deleteFromDatabase(id: id);
     }
-    on AppException catch (e) {
-      final failure = ErrorHandler.handleException(e);
-      _showMessage(error: failure, context: context);
+    catch (e, stackTrace) {
+      final errorHandler = ErrorHandler(
+          error: e,
+          stackTrace: stackTrace
+      );
+      final exception = errorHandler.handleException();
+      _showMessage(error: exception, context: context);
     }
   }
 
