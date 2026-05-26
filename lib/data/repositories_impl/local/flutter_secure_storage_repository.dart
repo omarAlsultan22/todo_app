@@ -3,7 +3,7 @@ import 'package:todo_app/presentation/utils/helpers/encryption_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 
-class FlutterSecureStorageRepository extends EncryptionKeysRepository {
+class FlutterSecureStorageRepository implements EncryptionKeysRepository {
   final FlutterSecureStorage _flutterSecureStorage;
 
   FlutterSecureStorageRepository({required FlutterSecureStorage flutterSecureStorage})
