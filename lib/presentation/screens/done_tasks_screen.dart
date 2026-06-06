@@ -1,8 +1,8 @@
 import '../states/tasks_state.dart';
 import '../cubits/tasks_cubit.dart';
 import 'package:flutter/material.dart';
+import '../widgets/lists/list_builder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../widgets/states/tasks_state_widget.dart';
 import '../widgets/states/error_state_widget.dart';
 import '../widgets/states/initial_state_widget.dart';
 import 'package:todo_app/presentation/constants/ui_strings.dart';
@@ -15,15 +15,32 @@ class DoneTasksScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TasksCubit, TasksState>(
       builder: (context, state) {
+        final cubit = TasksCubit.get(context);
         return state.when<Widget>(
             onInitial: () => const InitialStateWidget(),
             onLoading: () => const CircularProgressIndicator(),
-            onLoaded: (newData) => TasksStateWidget(tasks: newData!.products),
+            onLoaded: (newData, messageResult) =>
+                ListBuilder(
+                  isLocked: false,
+                  tasks: newData!.products,
+                  hasMore: newData.hasMore,
+                  messageResult: messageResult,
+                  onScroll: () =>
+                      cubit.loadMoreData(UiStrings.archivedStatus),
+                  updateData: ({required id, required status, required context}) =>
+                      cubit.updateData(
+                          id: id, status: status, context: context),
+                  deleteData: ({required id, required context}) =>
+                      cubit.deleteData(id: id, context: context),
+                ),
             onError: (error) =>
                 ErrorStateWidget(error: error.message,
                     onRetry: () =>
-                        TasksCubit.get(context).loadMoreData(
-                            UiStrings.doneStatus)));
+                        cubit.loadMoreData(
+                            UiStrings.doneStatus
+                        )
+                )
+        );
       },
     );
   }

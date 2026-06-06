@@ -1,10 +1,8 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import '../../cubits/tasks_cubit.dart';
 import '../form/default_form_field.dart';
 import '../../screens/new_tasks_screen.dart';
 import '../../screens/done_tasks_screen.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../screens/archived_tasks_screen.dart';
 import 'package:todo_app/constants/app_icons.dart';
 import '../../utils/validators/form_validators.dart';
@@ -15,10 +13,24 @@ class HomeLayout extends StatefulWidget {
   final IconData icon;
   final bool isVisible;
   final int currentIndex;
+  final Function (int) onChange;
+  final Function ({
+  required String title,
+  required String time,
+  required String date,
+  required BuildContext context,
+  })insertData;
+  final Function ({
+  required bool isVisible,
+  required IconData icon
+  })toggleBottomSheet;
 
   const HomeLayout({
+    required this.toggleBottomSheet,
     required this.currentIndex,
+    required this.insertData,
     required this.isVisible,
+    required this.onChange,
     required this.icon,
     super.key
   });
@@ -69,7 +81,6 @@ class _HomeLayoutState extends State<HomeLayout> {
 
 
   Widget _buildWidget() {
-    final cubit = context.read<TasksCubit>();
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -80,7 +91,7 @@ class _HomeLayoutState extends State<HomeLayout> {
         onPressed: () {
           if (widget.isVisible) {
             if (_formKey.currentState!.validate()) {
-              cubit.insertData(
+              widget.insertData(
                 context: context,
                 title: _titleController.text,
                 time: _timeController.text,
@@ -90,33 +101,33 @@ class _HomeLayoutState extends State<HomeLayout> {
           } else {
             _scaffoldKey.currentState
                 ?.showBottomSheet(
-                  (context) => _buildBottomSheet(cubit),
+                  (context) => _buildBottomSheet(),
               elevation: UiSizes.padding,
             )
                 .closed
                 .then((value) {
-              cubit.toggleBottomSheet(
+              widget.toggleBottomSheet(
                   isVisible: false, icon: AppIcons.editIcon);
               _titleController.clear();
               _timeController.clear();
               _dateController.clear();
             });
 
-            cubit.toggleBottomSheet(isVisible: true, icon: Icons.add);
+            widget.toggleBottomSheet(isVisible: true, icon: Icons.add);
           }
         },
         child: Icon(widget.icon),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: widget.currentIndex,
-        onTap: (index) => cubit.changeScreen(index),
+        onTap: (index) => widget.onChange(index),
         items: _iconsItems,
       ),
     );
   }
 
 
-  Widget _buildBottomSheet(TasksCubit cubit) {
+  Widget _buildBottomSheet() {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(UiSizes.padding),

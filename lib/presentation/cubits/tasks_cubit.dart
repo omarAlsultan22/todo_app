@@ -1,13 +1,12 @@
+import 'package:todo_app/data/models/message_result.dart';
+
 import '../states/tasks_state.dart';
-import '../constants/ui_strings.dart';
 import 'package:flutter/material.dart';
 import '../../errors/error_handler.dart';
-import '../../data/models/category_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/constants/app_icons.dart';
 import '../../domain/useCases/useCase_operations.dart';
 import '../../domain/repositories/data_repository.dart';
-import '../../errors/exceptions/base/app_exception.dart';
 import '../../data/models/ChangeBottomSheetStateModel.dart';
 import 'package:todo_app/presentation/constants/ui_sizes.dart';
 import 'package:todo_app/presentation/states/app_sub_states.dart';
@@ -17,47 +16,34 @@ class TasksCubit extends Cubit<TasksState> {
   final GetTasksUseCase _useCase;
   final DataRepository _repository;
 
-  static const int _initialTabIndex = 0;
-  static const int _initialTabCount = 3;
-
   TasksCubit({
     required GetTasksUseCase useCase,
     required DataRepository repository,
   })
       : _useCase = useCase,
         _repository = repository,
-        super(TasksState(currentTabIndex: _initialTabIndex,
-          tabsData: {
-            for (var i = _initialTabIndex; i < _initialTabCount; i++)
-              i: const CategoryData()
-          },
-          subState: InitialState(),
-          statusList: UiStrings.statusList,
-          bottomSheetState: const BottomSheetState()));
+        super(TasksState.initial());
 
   static TasksCubit get(context) => BlocProvider.of(context);
 
   static const _limit = UiSizes.defaultPageSize;
 
-  void _showMessage({
-    required AppException error,
-    required BuildContext context
-  }) =>
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())));
-
   Future<void> _loadTasks(String status) async {
     final tasks = await _useCase.execute(
         limit: _limit,
         status: status,
-        offset: state.offset + _limit
+        categoryData: state.currentTabData
     );
-    emit(
-        state.updateTab(state.currentTabIndex, tasks)
-            .copyWith(subState: SuccessState()));
+    if (tasks != null) {
+      emit(
+          state.updateTab(state.currentTabIndex, tasks)
+              .copyWith(subState: SuccessState()));
+      return;
+    }
+    emit(state.copyWith(subState: InitialState()));
   }
 
-  Future<void> changeScreen(int index) async {
+  Future<void> changeScreen({required int index}) async {
     emit(state.copyWith(currentTabIndex: index));
     if (!state.productsIsEmpty) return;
 
@@ -99,7 +85,8 @@ class TasksCubit extends Cubit<TasksState> {
           stackTrace: stackTrace
       );
       final exception = errorHandler.handleException();
-      _showMessage(error: exception, context: context);
+      state.copyWith(messageResult: MessageResult.error(error: exception)
+      );
     }
   }
 
@@ -131,7 +118,8 @@ class TasksCubit extends Cubit<TasksState> {
           stackTrace: stackTrace
       );
       final exception = errorHandler.handleException();
-      _showMessage(error: exception, context: context);
+      state.copyWith(messageResult: MessageResult.error(error: exception)
+      );
     }
   }
 
@@ -148,7 +136,10 @@ class TasksCubit extends Cubit<TasksState> {
           stackTrace: stackTrace
       );
       final exception = errorHandler.handleException();
-      _showMessage(error: exception, context: context);
+      emit(
+          state.copyWith(messageResult: MessageResult.error(error: exception)
+          )
+      );
     }
   }
 

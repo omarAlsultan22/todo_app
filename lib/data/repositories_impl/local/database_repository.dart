@@ -74,7 +74,7 @@ class TasksRepository implements DataRepository {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getDataFromDatabase({
+  Future<List<Map<String, Object?>>> getDataFromDatabase({
     required int limit,
     required int offset,
     required String status,

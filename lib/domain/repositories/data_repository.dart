@@ -10,7 +10,7 @@ abstract class DataRepository {
   });
 
 
-  Future <dynamic> getDataFromDatabase({
+  Future <List<Map<String, Object?>>> getDataFromDatabase({
     required int limit,
     required int offset,
     required String status,

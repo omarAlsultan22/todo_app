@@ -13,8 +13,9 @@ class CategoryData {
     this.offset = AppSizes.none,
   });
 
-int get length => products.length;
-bool get productsIsEmpty => products.isEmpty;
+  int get length => products.length;
+
+  bool get productsIsEmpty => products.isEmpty;
 
   CategoryData copyWith({
     List<TaskModel>? products,
