@@ -1,5 +1,3 @@
-import 'package:todo_app/data/models/message_result.dart';
-
 import '../states/tasks_state.dart';
 import 'package:flutter/material.dart';
 import '../../errors/error_handler.dart';
@@ -43,6 +41,15 @@ class TasksCubit extends Cubit<TasksState> {
     emit(state.copyWith(subState: InitialState()));
   }
 
+  Future<void> _errorHandler(Object e, StackTrace stackTrace) async {
+    final errorHandler = ErrorHandler(
+        error: e,
+        stackTrace: stackTrace
+    );
+    final exception = errorHandler.handleException();
+    emit(state.copyWith(subState: ErrorState(failure: exception)));
+  }
+
   Future<void> changeScreen({required int index}) async {
     emit(state.copyWith(currentTabIndex: index));
     if (!state.productsIsEmpty) return;
@@ -53,12 +60,7 @@ class TasksCubit extends Cubit<TasksState> {
       await _loadTasks(state.status);
     }
     catch (e, stackTrace) {
-      final errorHandler = ErrorHandler(
-          error: e,
-          stackTrace: stackTrace
-      );
-      final exception = errorHandler.handleException();
-      emit(state.copyWith(subState: ErrorState(failure: exception)));
+      _errorHandler(e, stackTrace);
     }
   }
 
@@ -80,13 +82,7 @@ class TasksCubit extends Cubit<TasksState> {
       });
     }
     catch (e, stackTrace) {
-      final errorHandler = ErrorHandler(
-          error: e,
-          stackTrace: stackTrace
-      );
-      final exception = errorHandler.handleException();
-      state.copyWith(messageResult: MessageResult.error(error: exception)
-      );
+      _errorHandler(e, stackTrace);
     }
   }
 
@@ -113,13 +109,7 @@ class TasksCubit extends Cubit<TasksState> {
       });
     }
     catch (e, stackTrace) {
-      final errorHandler = ErrorHandler(
-          error: e,
-          stackTrace: stackTrace
-      );
-      final exception = errorHandler.handleException();
-      state.copyWith(messageResult: MessageResult.error(error: exception)
-      );
+      _errorHandler(e, stackTrace);
     }
   }
 
@@ -131,15 +121,7 @@ class TasksCubit extends Cubit<TasksState> {
       _repository.deleteFromDatabase(id: id);
     }
     catch (e, stackTrace) {
-      final errorHandler = ErrorHandler(
-          error: e,
-          stackTrace: stackTrace
-      );
-      final exception = errorHandler.handleException();
-      emit(
-          state.copyWith(messageResult: MessageResult.error(error: exception)
-          )
-      );
+      _errorHandler(e, stackTrace);
     }
   }
 
