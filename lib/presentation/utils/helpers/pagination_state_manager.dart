@@ -6,7 +6,7 @@ class PaginationHandler {
   CategoryData updateWithNewData(CategoryData currentData,
       List<TaskModel> newArticles) {
     return currentData.copyWith(
-      products: [...currentData.products, ...newArticles],
+      tasks: [...currentData.tasks, ...newArticles],
       offset: newArticles.isNotEmpty ? currentData.offset + 1 : currentData
           .offset,
       hasMore: newArticles.isNotEmpty,

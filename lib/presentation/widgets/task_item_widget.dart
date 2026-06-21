@@ -5,16 +5,16 @@ import '../constants/ui_colors.dart';
 
 class TaskItemWidget extends StatelessWidget {
   final TaskModel task;
-  final VoidCallback? onUpdateDone;
-  final VoidCallback? onUpdateArchive;
-  final VoidCallback? onDismiss;
+  final Function(int) onDismiss;
+  final VoidCallback onUpdateDone;
+  final VoidCallback onUpdateArchive;
 
   const TaskItemWidget({
     super.key,
     required this.task,
-    this.onUpdateDone,
-    this.onUpdateArchive,
-    this.onDismiss,
+    required this.onUpdateDone,
+    required this.onUpdateArchive,
+    required this.onDismiss,
   });
 
   static const _widthValue = 20.0;
@@ -59,7 +59,7 @@ class TaskItemWidget extends StatelessWidget {
                 icon: Icon(Icons.archive_outlined)
             ),
           ],
-        ), onDismissed: (direction) => onDismiss.call
+        ), onDismissed: (direction) => onDismiss(task.id)
     );
   }
 }

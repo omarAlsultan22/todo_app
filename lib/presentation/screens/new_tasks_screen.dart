@@ -5,7 +5,6 @@ import '../widgets/lists/list_builder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/states/error_state_widget.dart';
 import '../widgets/states/initial_state_widget.dart';
-import 'package:todo_app/presentation/constants/ui_strings.dart';
 
 
 class NewTasksScreen extends StatelessWidget {
@@ -18,27 +17,24 @@ class NewTasksScreen extends StatelessWidget {
         final cubit = TasksCubit.get(context);
         return state.when<Widget>(
             onInitial: () => const InitialStateWidget(),
-            onLoading: () => const CircularProgressIndicator(),
-            onLoaded: (newData, messageResult) =>
+            onLoading: () => const Center(child: CircularProgressIndicator()),
+            onLoaded: (newData, bottomSheetState, messageResult) =>
                 ListBuilder(
                   isLocked: false,
-                  tasks: newData!.products,
+                  tasks: newData!.tasks,
                   hasMore: newData.hasMore,
                   messageResult: messageResult,
                   onScroll: () =>
-                      cubit.loadMoreData(UiStrings.archivedStatus),
-                  updateData: ({required id, required status, required context}) =>
-                      cubit.updateData(
-                          id: id, status: status, context: context),
-                  deleteData: ({required id, required context}) =>
-                      cubit.deleteData(id: id, context: context),
+                      cubit.loadMoreData(),
+                  updateData: (id, status) =>
+                      cubit.updateData(id: id, status: status),
+                  deleteData: (id) =>
+                      cubit.deleteData(id: id),
                 ),
             onError: (error) =>
                 ErrorStateWidget(error: error.message,
                     onRetry: () =>
-                        cubit.loadMoreData(
-                            UiStrings.newStatus
-                        )
+                        cubit.loadMoreData()
                 )
         );
       },

@@ -4,35 +4,29 @@ import '../form/default_form_field.dart';
 import '../../screens/new_tasks_screen.dart';
 import '../../screens/done_tasks_screen.dart';
 import '../../screens/archived_tasks_screen.dart';
-import 'package:todo_app/constants/app_icons.dart';
-import '../../utils/validators/form_validators.dart';
 import 'package:todo_app/presentation/constants/ui_sizes.dart';
+import 'package:todo_app/data/models/ChangeBottomSheetStateModel.dart';
 
 
 class HomeLayout extends StatefulWidget {
-  final IconData icon;
-  final bool isVisible;
   final int currentIndex;
-  final Function (int) onChange;
-  final Function ({
+  final Function(int) onChange;
+  final Function({
   required String title,
   required String time,
   required String date,
   required BuildContext context,
-  })insertData;
-  final Function ({
-  required bool isVisible,
-  required IconData icon
-  })toggleBottomSheet;
+  }) insertData;
+  final Function(bool) toggleBottomSheet;
+  final BottomSheetState? bottomSheetState;
 
   const HomeLayout({
     required this.toggleBottomSheet,
+    required this.bottomSheetState,
     required this.currentIndex,
     required this.insertData,
-    required this.isVisible,
     required this.onChange,
-    required this.icon,
-    super.key
+    super.key,
   });
 
   @override
@@ -46,13 +40,13 @@ class _HomeLayoutState extends State<HomeLayout> {
   final TextEditingController _titleController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  //texts
+  // texts
   static const task = 'Task';
   static const title = 'Title';
   static const time = 'Time';
   static const date = 'Date';
 
-  //spaces
+  // spaces
   static const _spacingVertical = SizedBox(height: 15.0);
 
   static const List<String> _screensTitles = [
@@ -68,17 +62,12 @@ class _HomeLayoutState extends State<HomeLayout> {
   ];
 
   static const List<BottomNavigationBarItem> _iconsItems = [
+    BottomNavigationBarItem(icon: Icon(Icons.menu), label: "Tasks"),
     BottomNavigationBarItem(
-        icon: Icon(Icons.menu),
-        label: "Tasks"),
+        icon: Icon(Icons.check_circle_outline), label: "Done"),
     BottomNavigationBarItem(
-        icon: Icon(Icons.check_circle_outline),
-        label: "Done"),
-    BottomNavigationBarItem(
-        icon: Icon(Icons.archive_outlined),
-        label: "Archive")
+        icon: Icon(Icons.archive_outlined), label: "Archived"),
   ];
-
 
   Widget _buildWidget() {
     return Scaffold(
@@ -88,35 +77,41 @@ class _HomeLayoutState extends State<HomeLayout> {
       ),
       body: _screens[widget.currentIndex],
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (widget.isVisible) {
+        onPressed: () async {
+          if (widget.bottomSheetState!.isVisible) {
             if (_formKey.currentState!.validate()) {
+              Navigator.pop(context);
               widget.insertData(
                 context: context,
                 title: _titleController.text,
                 time: _timeController.text,
                 date: _dateController.text,
               );
+              widget.toggleBottomSheet(false);
+              _titleController.clear();
+              _timeController.clear();
+              _dateController.clear();
             }
           } else {
+            // إذا كانت الـ BottomSheet مغلقة -> نفتحها
             _scaffoldKey.currentState
                 ?.showBottomSheet(
                   (context) => _buildBottomSheet(),
               elevation: UiSizes.padding,
             )
                 .closed
-                .then((value) {
-              widget.toggleBottomSheet(
-                  isVisible: false, icon: AppIcons.editIcon);
+                .then((_) {
+              // عند إغلاق الـ BottomSheet بالسحب للأسفل
+              widget.toggleBottomSheet(false);
               _titleController.clear();
               _timeController.clear();
               _dateController.clear();
             });
-
-            widget.toggleBottomSheet(isVisible: true, icon: Icons.add);
+            // نغير الحالة إلى مفتوحة
+            widget.toggleBottomSheet(true);
           }
         },
-        child: Icon(widget.icon),
+        child: Icon(widget.bottomSheetState!.icon),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: widget.currentIndex,
@@ -125,7 +120,6 @@ class _HomeLayoutState extends State<HomeLayout> {
       ),
     );
   }
-
 
   Widget _buildBottomSheet() {
     return Container(
@@ -139,7 +133,10 @@ class _HomeLayoutState extends State<HomeLayout> {
             DefaultFormField(
               controller: _titleController,
               type: TextInputType.text,
-              validator: (value) => FormValidators.sharedField(value!, title),
+              validator: (value) =>
+              value!.isEmpty
+                  ? '$title must not be empty'
+                  : null,
               label: '$task $title',
               prefix: Icons.title,
             ),
@@ -156,7 +153,10 @@ class _HomeLayoutState extends State<HomeLayout> {
                   _timeController.text = pickedTime.format(context);
                 }
               },
-              validator: (value) => FormValidators.sharedField(value!, time),
+              validator: (value) =>
+              value!.isEmpty
+                  ? '$time must not be empty'
+                  : null,
               label: '$task $time',
               prefix: Icons.watch_later_outlined,
             ),
@@ -175,7 +175,10 @@ class _HomeLayoutState extends State<HomeLayout> {
                   _dateController.text = DateFormat.yMMMd().format(pickedDate);
                 }
               },
-              validator: (value) => FormValidators.sharedField(value!, date),
+              validator: (value) =>
+              value!.isEmpty
+                  ? '$date must not be empty'
+                  : null,
               label: '$task $date',
               prefix: Icons.calendar_today,
             ),

@@ -26,13 +26,14 @@ class TasksCubit extends Cubit<TasksState> {
 
   static const _limit = UiSizes.defaultPageSize;
 
-  Future<void> _loadTasks(String status) async {
+  Future<void> _loadTasks({int limit = 0, int? length}) async {
     final tasks = await _useCase.execute(
-        limit: _limit,
-        status: status,
+        length: length,
+        limit: _limit - limit,
+        status: state.status,
         categoryData: state.currentTabData
     );
-    if (tasks != null) {
+    if (tasks.productsIsNotEmpty || state.tasksIsNotEmpty) {
       emit(
           state.updateTab(state.currentTabIndex, tasks)
               .copyWith(subState: SuccessState()));
@@ -50,14 +51,24 @@ class TasksCubit extends Cubit<TasksState> {
     emit(state.copyWith(subState: ErrorState(failure: exception)));
   }
 
-  Future<void> changeScreen({required int index}) async {
-    emit(state.copyWith(currentTabIndex: index));
-    if (!state.productsIsEmpty) return;
+  void _updateTasks(int id) {
+    final newCategoryData = state.deleteTask(id);
+    emit(state.updateTab(state.currentTabIndex, newCategoryData));
+    if (state.length == _limit - 1) {
+      _loadTasks(limit: state.length);
+    }
+  }
 
-    emit(state.copyWith(subState: LoadingState()));
+  Future<void> changeScreen({required int index}) async {
+    emit(state.copyWith(currentTabIndex: index, subState: SuccessState()));
+    if (state.length >= 15) return;
+
+    if (!state.tasksIsNotEmpty) {
+      emit(state.copyWith(subState: LoadingState()));
+    }
 
     try {
-      await _loadTasks(state.status);
+      await _loadTasks();
     }
     catch (e, stackTrace) {
       _errorHandler(e, stackTrace);
@@ -68,57 +79,75 @@ class TasksCubit extends Cubit<TasksState> {
     required String title,
     required String time,
     required String date,
-    required BuildContext context
   }) async {
     try {
       await _repository.insertToDatabase(
           title: title,
           time: time,
           date: date
-      ).then((_) {
-        if (state.length < _limit) {
-          _loadTasks(state.status);
-        }
-      });
+      );
+      _loadTasks(length: 0);
+      /*
+      final newTask = TaskModel(
+          status: 'new',
+          title: title,
+          time: time,
+          date: date,
+          id: 0
+      );
+      final position = TaskSorter.findInsertPosition(
+          tasks: state.tasks, newTask: newTask);
+      if (position == state.length - 1 && state.length == _limit) {
+        emit(state.copyWith(messageResult: MessageResult.success(
+            message: 'The task has been added successfully')));
+        return;
+      }
+      if (!state.tasksIsNotEmpty) {
+        _loadTasks();
+        return;
+      }
+      final newCategoryData = state.insertNewTask(position, newTask);
+      emit(state.updateTab(state.currentTabIndex, newCategoryData));
+      */
     }
     catch (e, stackTrace) {
       _errorHandler(e, stackTrace);
     }
   }
 
-  Future<void> loadMoreData(String status) async {
+  Future<void> loadMoreData() async {
     if (!state.hasMore) return;
     try {
-      await _loadTasks(status);
+      await _loadTasks();
     }
     catch (e) {
       Future.delayed(const Duration(seconds: 3), () {
-        loadMoreData(status);
+        loadMoreData();
       });
     }
   }
 
-  void updateData({
+  Future<void> updateData({
     required int id,
     required String status,
-    required BuildContext context
-  }) {
+  }) async {
     try {
-      _repository.updateInDatabase(status: status, id: id).then((_) async {
-        await loadMoreData(status);
-      });
+      if (status != state.status) {
+        await _repository.updateInDatabase(status: status, id: id);
+        _updateTasks(id);
+      }
     }
     catch (e, stackTrace) {
       _errorHandler(e, stackTrace);
     }
   }
 
-  void deleteData({
+  Future<void> deleteData({
     required int id,
-    required BuildContext context,
-  }) {
+  }) async {
     try {
-      _repository.deleteFromDatabase(id: id);
+      await _repository.deleteFromDatabase(id: id);
+      _updateTasks(id);
     }
     catch (e, stackTrace) {
       _errorHandler(e, stackTrace);
@@ -127,11 +156,10 @@ class TasksCubit extends Cubit<TasksState> {
 
   void toggleBottomSheet({
     required bool isVisible,
-    required IconData icon
   }) {
     final bottomSheetState = BottomSheetState(
       isVisible: isVisible,
-      icon: isVisible ? AppIcons.editIcon : Icons.close,
+      icon: isVisible ? Icons.add : AppIcons.editIcon,
     );
     emit(state.copyWith(bottomSheetState: bottomSheetState));
   }

@@ -14,20 +14,20 @@ class GetTasksUseCase {
       : _repository = repository,
         _paginationHandler = paginationHandler;
 
-  Future<CategoryData?> execute({
+  Future<CategoryData> execute({
+    int? length,
     required int limit,
     required String status,
     required CategoryData? categoryData
   }) async {
     try {
+      final currentLength = length ?? categoryData!.length;
+      final offset = categoryData!.offset + currentLength;
       final jsonList = await _repository.getDataFromDatabase(
           limit: limit,
           status: status,
-          offset: categoryData!.offset + limit
+          offset: offset
       );
-      if (jsonList.isEmpty) {
-        return null;
-      }
       final tasksList = jsonList.map((e) => TaskModel.fromJson(e)).toList();
       return _paginationHandler.updateWithNewData(categoryData, tasksList);
     } catch (e) {

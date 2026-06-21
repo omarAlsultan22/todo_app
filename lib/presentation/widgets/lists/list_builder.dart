@@ -1,5 +1,6 @@
 import '../task_item_widget.dart';
 import 'package:flutter/material.dart';
+import '../../constants/ui_strings.dart';
 import '../states/initial_state_widget.dart';
 import '../../../data/models/task_model.dart';
 import '../../../data/models/message_result.dart';
@@ -14,15 +15,8 @@ class ListBuilder extends StatefulWidget {
   final List<TaskModel> tasks;
   final VoidCallback onScroll;
   final MessageResult messageResult;
-  final Function ({
-  required int id,
-  required String status,
-  required BuildContext context
-  }) updateData;
-  final Function ({
-  required int id,
-  required BuildContext context
-  }) deleteData;
+  final Function (int) deleteData;
+  final Function (int, String) updateData;
 
   ListBuilder({
     super.key,
@@ -54,7 +48,7 @@ class _ListBuilderState extends State<ListBuilder> {
     if (widget.messageResult.message != null) {
       _showMessageResult(widget.messageResult);
     }
-    setState((){});
+    setState(() {});
   }
 
   void _onScrollData() {
@@ -92,13 +86,18 @@ class _ListBuilderState extends State<ListBuilder> {
                 controller: scrollController,
                 itemBuilder: (context, index) {
                   if (index < tasks.length) {
-                    _buildTaskItem(widget.tasks[index], context);
+                    return _buildTaskItem(widget.tasks[index], context);
                   }
-                  return Center(
-                    child: hasMore!
-                        ? const CircularProgressIndicator() :
-                    const SizedBox(),
-                  );
+                  else {
+                    if (tasks.length >= 15) {
+                      return Center(
+                        child: hasMore!
+                            ? const CircularProgressIndicator() :
+                        const SizedBox(),
+                      );
+                    }
+                  }
+                  return null;
                 },
                 separatorBuilder: (context, index) =>
                     Padding(
@@ -131,22 +130,19 @@ class _ListBuilderState extends State<ListBuilder> {
       task: model,
       onUpdateDone: () {
         widget.updateData(
-          status: 'done',
-          id: model.id,
-          context: context,
+            model.id,
+            UiStrings.doneStatus
         );
       },
       onUpdateArchive: () {
         widget.updateData(
-          status: 'archive',
-          id: model.id,
-          context: context,
+            model.id,
+            UiStrings.archiveStatus
         );
       },
-      onDismiss: () {
+      onDismiss: (id) {
         widget.deleteData(
-          id: model.id,
-          context: context,
+            id
         );
       },
     );

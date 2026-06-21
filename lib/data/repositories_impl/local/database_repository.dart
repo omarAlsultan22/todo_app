@@ -1,6 +1,7 @@
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:todo_app/data/constants/data_strings.dart';
 import '../../../domain/repositories/data_repository.dart';
+import 'package:todo_app/presentation/constants/ui_strings.dart';
 import 'package:todo_app/domain/repositories/encryption_keys_repository.dart';
 
 
@@ -47,6 +48,15 @@ class TasksRepository implements DataRepository {
         }).catchError((error) {
           throw('Error When Creating Table ${error.toString()}');
         });
+        // 2. إنشاء فهرس للترتيب الزمني 🚀
+        await database.execute('''
+          CREATE INDEX idx_tasks_time ON tasks($_date, $_time)
+        ''');
+
+        // 3. فهرس للحالة (للتقسيم)
+        await database.execute('''
+          CREATE INDEX idx_tasks_status ON tasks($_status)
+        ''');
       },
       onOpen: (database) {
         print('database opened');
@@ -64,7 +74,8 @@ class TasksRepository implements DataRepository {
   }) async {
     await _database.transaction((txn) =>
         txn.rawInsert(
-            'INSERT INTO $_tasks ($_title, $_date, $_time, $_status) VALUES("$title", "$date", "$time", "new")')
+            'INSERT INTO $_tasks ($_title, $_date, $_time, $_status) VALUES("$title", "$date", "$time", "${UiStrings
+                .newStatus}")')
             .then((value) {
           print('$value inserted successfully');
         }).catchError((error) {
@@ -80,9 +91,14 @@ class TasksRepository implements DataRepository {
     required String status,
   }) async {
     try {
-      return await _database.rawQuery(
-          'SELECT * FROM $_tasks WHERE $_status = ? LIMIT ? OFFSET ?',
-          [status, limit, offset]
+      return await _database.query(
+        _tasks,
+        where: '$_status = ?',
+        whereArgs: [status],
+        orderBy: '$_date ASC, $_time ASC',
+        // 🔥 ترتيب زمني من الأقدم للأحدث
+        limit: limit,
+        offset: offset,
       );
     }
     catch (e) {

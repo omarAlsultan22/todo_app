@@ -1,5 +1,4 @@
 import 'app_sub_states.dart';
-import 'package:flutter/widgets.dart';
 import '../constants/ui_strings.dart';
 import 'base/main_app_sub_state.dart';
 import '../../data/models/category_data.dart';
@@ -14,26 +13,27 @@ class TasksState {
   final Map<int, CategoryData> tabsData;
   final MessageResult messageResult;
   final MainAppSubState subState;
-  final List<String>? statusList;
+  final List<String> statusesList;
   final int currentTabIndex;
 
   const TasksState({
     required this.bottomSheetState,
     required this.currentTabIndex,
     required this.messageResult,
+    required this.statusesList,
     required this.tabsData,
     required this.subState,
-    this.statusList
   });
 
   factory TasksState.initial(){
-    return TasksState(currentTabIndex: 0,
+    return TasksState(
+        currentTabIndex: 0,
         tabsData: {
           for (var i = 0; i < 3; i++)
             i: const CategoryData()
         },
         subState: InitialState(),
-        statusList: UiStrings.statusList,
+        statusesList: UiStrings.statusList,
         messageResult: MessageResult.initial(),
         bottomSheetState: const BottomSheetState()
     );
@@ -41,9 +41,9 @@ class TasksState {
 
   CategoryData? get currentTabData => tabsData[currentTabIndex];
 
-  bool get productsIsEmpty => currentTabData!.productsIsEmpty;
+  bool get tasksIsNotEmpty => currentTabData!.productsIsNotEmpty;
 
-  List<TaskModel> get products => currentTabData!.products;
+  List<TaskModel> get tasks => currentTabData!.tasks;
 
   bool get hasMore => currentTabData!.hasMore;
 
@@ -51,11 +51,22 @@ class TasksState {
 
   int get offset => currentTabData!.offset;
 
-  IconData get icon => bottomSheetState!.icon;
+  String get status => statusesList[currentTabIndex];
 
-  bool get isVisible => bottomSheetState!.isVisible;
-
-  String get status => statusList![currentTabIndex];
+  CategoryData deleteTask(int index) {
+    final newTasks = List<TaskModel>.from(tasks);
+    if(newTasks.length < 2){
+      newTasks.clear();
+    }
+    else {
+      newTasks.removeAt(index);
+    }
+    return CategoryData(
+        tasks: newTasks,
+        hasMore: hasMore,
+        offset: offset
+    );
+  }
 
   TasksState updateTab(int index, CategoryData newTabData) {
     return copyWith(
@@ -70,28 +81,31 @@ class TasksState {
     BottomSheetState? bottomSheetState,
     Map<int, CategoryData>? tabsData,
     MessageResult? messageResult,
+    List<String>? statusesList,
     MainAppSubState? subState,
     int? currentTabIndex,
   }) {
     return TasksState(
-      subState: subState ?? this.subState,
-      tabsData: tabsData ?? this.tabsData,
-      messageResult: messageResult ?? this.messageResult,
-      bottomSheetState: bottomSheetState ?? this.bottomSheetState,
-      currentTabIndex: currentTabIndex ?? this.currentTabIndex,
+        subState: subState ?? this.subState,
+        tabsData: tabsData ?? this.tabsData,
+        statusesList: statusesList ?? this.statusesList,
+        messageResult: messageResult ?? this.messageResult,
+        currentTabIndex: currentTabIndex ?? this.currentTabIndex,
+        bottomSheetState: bottomSheetState ?? this.bottomSheetState
     );
   }
 
   R when<R>({
     required R Function() onInitial,
     required R Function() onLoading,
-    required R Function(CategoryData?, MessageResult) onLoaded,
+    required R Function(CategoryData?, BottomSheetState?, MessageResult) onLoaded,
     required R Function(AppException) onError,
   }) {
     return subState.when(
         onInitial: onInitial,
         onLoading: onLoading,
-        onLoaded: () => onLoaded(currentTabData, messageResult),
+        onLoaded: () =>
+            onLoaded(currentTabData, bottomSheetState, messageResult),
         onError: (failure) => onError(failure)
     );
   }

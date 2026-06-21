@@ -1,29 +1,28 @@
-import 'package:todo_app/constants/app_sizes.dart';
 import 'package:todo_app/data/models/task_model.dart';
 
 
 class CategoryData {
-  final List<TaskModel> products;
+  final List<TaskModel> tasks;
   final bool hasMore;
   final int offset;
 
   const CategoryData({
-    this.products = const [],
+    this.tasks = const [],
     this.hasMore = true,
-    this.offset = AppSizes.none,
+    this.offset = 0,
   });
 
-  int get length => products.length;
+  int get length => tasks.length;
 
-  bool get productsIsEmpty => products.isEmpty;
+  bool get productsIsNotEmpty => tasks.isNotEmpty;
 
   CategoryData copyWith({
-    List<TaskModel>? products,
+    List<TaskModel>? tasks,
     bool? hasMore,
     int? offset
   }) {
     return CategoryData(
-        products: products ?? this.products,
+        tasks: tasks ?? this.tasks,
         hasMore: hasMore ?? this.hasMore,
         offset: offset ?? this.offset
     );
