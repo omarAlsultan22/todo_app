@@ -16,7 +16,7 @@ class ListBuilder extends StatefulWidget {
   final VoidCallback onScroll;
   final MessageResult messageResult;
   final Function (int) deleteData;
-  final Function (int, String) updateData;
+  final Function (int, int, String) updateData;
 
   ListBuilder({
     super.key,
@@ -130,12 +130,14 @@ class _ListBuilderState extends State<ListBuilder> {
       task: model,
       onUpdateDone: () {
         widget.updateData(
+            1,
             model.id,
             UiStrings.doneStatus
         );
       },
       onUpdateArchive: () {
         widget.updateData(
+            2,
             model.id,
             UiStrings.archiveStatus
         );

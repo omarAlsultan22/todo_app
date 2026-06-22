@@ -26,8 +26,12 @@ class NewTasksScreen extends StatelessWidget {
                   messageResult: messageResult,
                   onScroll: () =>
                       cubit.loadMoreData(),
-                  updateData: (id, status) =>
-                      cubit.updateData(id: id, status: status),
+                  updateData: (index, id, status) =>
+                      cubit.updateData(
+                          id: id,
+                          index: index,
+                          status: status
+                      ),
                   deleteData: (id) =>
                       cubit.deleteData(id: id),
                 ),

@@ -53,16 +53,27 @@ class TasksState {
 
   String get status => statusesList[currentTabIndex];
 
-  CategoryData deleteTask(int index) {
-    final newTasks = List<TaskModel>.from(tasks);
-    if(newTasks.length < 2){
-      newTasks.clear();
+  CategoryData? getTabData(int index) {
+    return tabsData[index];
+  }
+
+  List<TaskModel> insertTaskByPosition(int position, List<TaskModel> tasks,
+      TaskModel newTask) {
+    final tasksModels = tasks;
+    tasksModels.insert(position, newTask);
+    return tasksModels;
+  }
+
+  CategoryData deleteTask(int id) {
+    final tasksModels = List<TaskModel>.from(tasks);
+    if (tasksModels.length < 2) {
+      tasksModels.clear();
     }
     else {
-      newTasks.removeAt(index);
+      tasksModels.removeWhere((e) => e.id == id);
     }
     return CategoryData(
-        tasks: newTasks,
+        tasks: tasksModels,
         hasMore: hasMore,
         offset: offset
     );

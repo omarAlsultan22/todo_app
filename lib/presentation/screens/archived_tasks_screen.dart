@@ -5,7 +5,6 @@ import '../widgets/lists/list_builder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/states/error_state_widget.dart';
 import '../widgets/states/initial_state_widget.dart';
-import 'package:todo_app/presentation/constants/ui_strings.dart';
 
 
 class ArchivedTasksScreen extends StatelessWidget {
@@ -27,9 +26,11 @@ class ArchivedTasksScreen extends StatelessWidget {
                   messageResult: messageResult,
                   onScroll: () =>
                       cubit.loadMoreData(),
-                  updateData: (id, status) =>
+                  updateData: (index, id,status) =>
                       cubit.updateData(
-                          id: id, status: status
+                          id: id,
+                          index: index,
+                          status: status
                       ),
                   deleteData: (id) =>
                       cubit.deleteData(id: id),

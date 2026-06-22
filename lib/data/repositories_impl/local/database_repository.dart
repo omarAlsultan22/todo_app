@@ -67,21 +67,66 @@ class TasksRepository implements DataRepository {
   }
 
   @override
-  Future<void> insertToDatabase({
+  Future<Map<String, Object?>> insertToDatabase({
     required String title,
     required String time,
     required String date,
   }) async {
-    await _database.transaction((txn) =>
-        txn.rawInsert(
-            'INSERT INTO $_tasks ($_title, $_date, $_time, $_status) VALUES("$title", "$date", "$time", "${UiStrings
-                .newStatus}")')
-            .then((value) {
-          print('$value inserted successfully');
-        }).catchError((error) {
-          throw('Error When Inserting New Record ${error.toString()}');
-        })
-    );
+    try {
+      // 1. استخدام transaction مع rawQuery
+      final result = await _database.transaction((txn) async {
+        return await txn.rawQuery('''
+          INSERT INTO $_tasks ($_title, $_date, $_time, $_status) 
+          VALUES (?, ?, ?, ?)
+          RETURNING $_id, $_title, $_date, $_time, $_status
+        ''', [title, date, time, UiStrings.newStatus]);
+      });
+
+      // 2. التحقق من النتيجة
+      if (result.isEmpty) {
+        throw Exception('Failed to insert task');
+      }
+
+      final insertedTask = result.first;
+      print(
+          '✅ Task inserted: ID ${insertedTask[_id]}, Title: ${insertedTask[_title]}');
+
+      return insertedTask; // Map<String, Object?>
+
+    } catch (error) {
+      print('❌ Error inserting task: $error');
+      throw Exception('Error When Inserting New Record: ${error.toString()}');
+    }
+  }
+
+
+  @override
+  Future<int> getTaskPosition({
+    required String date,
+    required String time,
+    required String status,
+  }) async {
+    try {
+      // count = عدد المهام التي وقتها < وقت المهمة الجديدة
+      final result = await _database.rawQuery('''
+        SELECT COUNT(*) as position 
+        FROM $_tasks 
+        WHERE $_status = ? 
+          AND (
+            $_date < ? 
+            OR ($_date = ? AND $_time < ?)
+          )
+      ''', [status, date, date, time]);
+
+      // الرقم المسترجع = موقع المهمة في القائمة
+      final position = Sqflite.firstIntValue(result) ?? 0;
+
+      print('📍 Position calculated: $position');
+      return position;
+    } catch (e) {
+      print('❌ Error calculating position: $e');
+      rethrow;
+    }
   }
 
   @override
@@ -107,18 +152,30 @@ class TasksRepository implements DataRepository {
   }
 
   @override
-  Future<void> updateInDatabase({
+  Future<Map<String, Object?>> updateInDatabase({
     required String status,
     required int id,
-  }) async
-  {
+  }) async {
     try {
-      _database.rawUpdate(
-        'UPDATE $_tasks SET $_status = ? WHERE $_id = ?',
-        [status, id],
-      );
-    }
-    catch (e) {
+      final result = await _database.transaction((txn) async {
+        return await txn.rawQuery('''
+        UPDATE $_tasks 
+        SET $_status = ? 
+        WHERE $_id = ?
+        RETURNING $_id, $_title, $_date, $_time, $_status
+      ''', [status, id]);
+      });
+
+      if (result.isNotEmpty) {
+        final insertedTask = result.first;
+        print(
+            '✅ Task updated: ${insertedTask[_title]} (ID: ${insertedTask[_id]})');
+        return insertedTask;
+      } else {
+        throw Exception('Task with ID $id not found');
+      }
+    } catch (e) {
+      print('❌ Error updating task: $e');
       rethrow;
     }
   }
@@ -129,7 +186,7 @@ class TasksRepository implements DataRepository {
   }) async
   {
     try {
-      _database.rawDelete('DELETE FROM $_tasks WHERE $_id = ?', [id]);
+      await _database.rawDelete('DELETE FROM $_tasks WHERE $_id = ?', [id]);
     }
     catch (e) {
       rethrow;

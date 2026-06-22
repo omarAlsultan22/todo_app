@@ -2,13 +2,17 @@ abstract class DataRepository {
 
   void createDatabase();
 
-
-  Future<void> insertToDatabase({
+  Future<Map<String, Object?>> insertToDatabase({
     required String title,
     required String time,
     required String date,
   });
 
+  Future<int> getTaskPosition({
+    required String date,
+    required String time,
+    required String status,
+  });
 
   Future <List<Map<String, Object?>>> getDataFromDatabase({
     required int limit,
@@ -16,12 +20,10 @@ abstract class DataRepository {
     required String status,
   });
 
-
-  Future<void> updateInDatabase({
+  Future<Map<String, Object?>> updateInDatabase({
     required String status,
     required int id,
   });
-
 
   Future <void> deleteFromDatabase({
     required int id,

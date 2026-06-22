@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../errors/error_handler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/constants/app_icons.dart';
+import 'package:todo_app/data/models/task_model.dart';
 import '../../domain/useCases/useCase_operations.dart';
-import '../../domain/repositories/data_repository.dart';
 import '../../data/models/ChangeBottomSheetStateModel.dart';
 import 'package:todo_app/presentation/constants/ui_sizes.dart';
 import 'package:todo_app/presentation/states/app_sub_states.dart';
@@ -12,23 +12,19 @@ import 'package:todo_app/presentation/states/app_sub_states.dart';
 
 class TasksCubit extends Cubit<TasksState> {
   final GetTasksUseCase _useCase;
-  final DataRepository _repository;
 
   TasksCubit({
     required GetTasksUseCase useCase,
-    required DataRepository repository,
   })
       : _useCase = useCase,
-        _repository = repository,
         super(TasksState.initial());
 
   static TasksCubit get(context) => BlocProvider.of(context);
 
   static const _limit = UiSizes.defaultPageSize;
 
-  Future<void> _loadTasks({int limit = 0, int? length}) async {
-    final tasks = await _useCase.execute(
-        length: length,
+  Future<void> _loadTasks({int limit = 0}) async {
+    final tasks = await _useCase.executeGetData(
         limit: _limit - limit,
         status: state.status,
         categoryData: state.currentTabData
@@ -59,9 +55,66 @@ class TasksCubit extends Cubit<TasksState> {
     }
   }
 
-  Future<void> changeScreen({required int index}) async {
-    emit(state.copyWith(currentTabIndex: index, subState: SuccessState()));
-    if (state.length >= 15) return;
+  int _calculateSafePosition({
+    required int position,
+    required int tasksLength,
+  }) {
+    if (tasksLength == 0) {
+      return 0;
+    }
+
+    if (position >= 0 && position <= tasksLength) {
+      return position;
+    }
+
+    if (position < 0) {
+      print('⚠️ Position ($position) < 0, adding at beginning');
+      return 0;
+    }
+    return tasksLength;
+  }
+
+  Future<void> _addNewTask({
+    required int index,
+    required TaskModel taskModel,
+  }) async {
+    // 1. حساب الموقع من قاعدة البيانات
+    final position = await _useCase.executeGetTaskPosition(
+      taskModel: taskModel,
+    );
+
+    // 2. الحصول على البيانات الحالية
+    final tabData = state.getTabData(index);
+    if (tabData == null) {
+      throw Exception('Tab data not found for index: $index');
+    }
+
+    final currentTasks = tabData.tasks;
+
+    // 3. حساب الموقع الآمن للإضافة
+    final safePosition = _calculateSafePosition(
+      position: position,
+      tasksLength: currentTasks.length,
+    );
+
+    if (currentTasks.length == safePosition) {
+      return;
+    }
+
+    // 4. إضافة المهمة في الموقع الآمن
+    final updatedTasks = state.insertTaskByPosition(
+        position, currentTasks, taskModel);
+    // 5. تحديث الحالة
+    final newTabData = tabData.copyWith(
+      tasks: updatedTasks,
+    );
+
+    emit(state.updateTab(index, newTabData));
+  }
+
+  Future<void> changeScreen({int? index}) async {
+    emit(state.copyWith(
+        currentTabIndex: state.currentTabIndex, subState: SuccessState()));
 
     if (!state.tasksIsNotEmpty) {
       emit(state.copyWith(subState: LoadingState()));
@@ -79,36 +132,15 @@ class TasksCubit extends Cubit<TasksState> {
     required String title,
     required String time,
     required String date,
+    int index = 0
   }) async {
     try {
-      await _repository.insertToDatabase(
+      final newTask = await _useCase.executeInsertData(
           title: title,
           time: time,
           date: date
       );
-      _loadTasks(length: 0);
-      /*
-      final newTask = TaskModel(
-          status: 'new',
-          title: title,
-          time: time,
-          date: date,
-          id: 0
-      );
-      final position = TaskSorter.findInsertPosition(
-          tasks: state.tasks, newTask: newTask);
-      if (position == state.length - 1 && state.length == _limit) {
-        emit(state.copyWith(messageResult: MessageResult.success(
-            message: 'The task has been added successfully')));
-        return;
-      }
-      if (!state.tasksIsNotEmpty) {
-        _loadTasks();
-        return;
-      }
-      final newCategoryData = state.insertNewTask(position, newTask);
-      emit(state.updateTab(state.currentTabIndex, newCategoryData));
-      */
+      _addNewTask(index: index, taskModel: newTask);
     }
     catch (e, stackTrace) {
       _errorHandler(e, stackTrace);
@@ -129,12 +161,14 @@ class TasksCubit extends Cubit<TasksState> {
 
   Future<void> updateData({
     required int id,
+    required int index,
     required String status,
   }) async {
     try {
       if (status != state.status) {
-        await _repository.updateInDatabase(status: status, id: id);
+        final taskModel = await _useCase.executeUpdateData(status: status, id: id);
         _updateTasks(id);
+          _addNewTask(index: index, taskModel: taskModel);
       }
     }
     catch (e, stackTrace) {
@@ -146,7 +180,7 @@ class TasksCubit extends Cubit<TasksState> {
     required int id,
   }) async {
     try {
-      await _repository.deleteFromDatabase(id: id);
+      await _useCase.executeDeleteData(id: id);
       _updateTasks(id);
     }
     catch (e, stackTrace) {
