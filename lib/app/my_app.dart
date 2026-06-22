@@ -19,14 +19,14 @@ class MyApp extends StatelessWidget {
     final keysRepository = FlutterSecureStorageRepository(
         flutterSecureStorage: flutterSecureStorage);
     final repository = TasksRepository(
-        repository: keysRepository)
-      ..createDatabase();
+        repository: keysRepository);
     final paginationHandler = PaginationHandler();
     final useCase = GetTasksUseCase(
         repository: repository, paginationHandler: paginationHandler);
     return BlocProvider<TasksCubit>(
         create: (BuildContext context) =>
-        TasksCubit(useCase: useCase),
+        TasksCubit(useCase: useCase)
+          ..changeScreen(index: 0),
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           home: HomeScreen(),
