@@ -60,7 +60,12 @@ class TasksState {
   List<TaskModel> insertTaskByPosition(int position, List<TaskModel> tasks,
       TaskModel newTask) {
     final tasksModels = tasks;
-    tasksModels.insert(position, newTask);
+    if(tasksModels.isEmpty){
+      tasksModels.add(newTask);
+    }
+    else {
+      tasksModels.insert(position, newTask);
+    }
     return tasksModels;
   }
 

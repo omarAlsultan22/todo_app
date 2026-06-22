@@ -35,7 +35,7 @@ class GetTasksUseCase {
     required CategoryData? categoryData
   }) async {
     try {
-      final offset = categoryData!.offset + categoryData.length;
+      final offset = categoryData!.offset + categoryData.length -1;
       final jsonList = await _repository.getDataFromDatabase(
           limit: limit,
           status: status,

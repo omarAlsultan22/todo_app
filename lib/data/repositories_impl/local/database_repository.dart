@@ -1,4 +1,5 @@
 import 'package:sqflite_sqlcipher/sqflite.dart';
+import '../../../presentation/constants/ui_sizes.dart';
 import 'package:todo_app/data/constants/data_strings.dart';
 import '../../../domain/repositories/data_repository.dart';
 import 'package:todo_app/presentation/constants/ui_strings.dart';
@@ -59,11 +60,15 @@ class TasksRepository implements DataRepository {
         ''');
       },
       onOpen: (database) {
+        _database = database;
+        getDataFromDatabase(
+            offset: 0,
+            limit: UiSizes.defaultPageSize,
+            status: UiStrings.newStatus
+        );
         print('database opened');
       },
-    ).then((value) {
-      _database = value;
-    });
+    );
   }
 
   @override

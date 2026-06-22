@@ -97,7 +97,7 @@ class TasksCubit extends Cubit<TasksState> {
       tasksLength: currentTasks.length,
     );
 
-    if (currentTasks.length == safePosition) {
+    if (currentTasks.length >= _limit && currentTasks.length < safePosition) {
       return;
     }
 
@@ -109,12 +109,13 @@ class TasksCubit extends Cubit<TasksState> {
       tasks: updatedTasks,
     );
 
-    emit(state.updateTab(index, newTabData));
+    state.updateTab(index, newTabData);
+    emit(state.copyWith(subState: SuccessState()));
   }
 
-  Future<void> changeScreen({int? index}) async {
+  Future<void> changeScreen({required int index}) async {
     emit(state.copyWith(
-        currentTabIndex: state.currentTabIndex, subState: SuccessState()));
+        currentTabIndex: index));
 
     if (!state.tasksIsNotEmpty) {
       emit(state.copyWith(subState: LoadingState()));
@@ -166,9 +167,10 @@ class TasksCubit extends Cubit<TasksState> {
   }) async {
     try {
       if (status != state.status) {
-        final taskModel = await _useCase.executeUpdateData(status: status, id: id);
+        final taskModel = await _useCase.executeUpdateData(
+            status: status, id: id);
         _updateTasks(id);
-          _addNewTask(index: index, taskModel: taskModel);
+        _addNewTask(index: index, taskModel: taskModel);
       }
     }
     catch (e, stackTrace) {
