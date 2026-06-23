@@ -1,6 +1,9 @@
+import 'dart:ui';
+
+
 abstract class DataRepository {
 
-  void createDatabase();
+  Future<void> createDatabase(VoidCallback onLoad);
 
   Future<Map<String, Object?>> insertToDatabase({
     required String title,

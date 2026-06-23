@@ -1,7 +1,8 @@
-import '../../presentation/utils/helpers/pagination_state_manager.dart';
+import '../../utils/pagination_state_manager.dart';
 import 'package:todo_app/data/models/category_data.dart';
 import '../repositories/data_repository.dart';
 import '../../data/models/task_model.dart';
+import 'package:flutter/widgets.dart';
 
 
 class GetTasksUseCase {
@@ -13,6 +14,14 @@ class GetTasksUseCase {
     required PaginationHandler paginationHandler})
       : _repository = repository,
         _paginationHandler = paginationHandler;
+
+  Future<void> executeInitializeDatabase(VoidCallback onLoad) async {
+    try {
+      await _repository.createDatabase(() => onLoad());
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   Future<TaskModel> executeInsertData({
     required String time,

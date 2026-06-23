@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/widgets.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:todo_app/data/constants/data_strings.dart';
 import '../../../domain/repositories/data_repository.dart';
@@ -12,15 +13,9 @@ class TasksRepository implements DataRepository {
   TasksRepository({
     required EncryptionKeysRepository repository
   })
-      : _repository = repository {
-    _initializeDatabase();
-  }
-
-  bool _isDatabaseInitialized = false;
+      : _repository = repository;
 
   static late Database _database;
-  static final Completer<void> _databaseInitCompleter = Completer<void>();
-
 
   static const _text = 'TEXT';
   static const _tasks = 'tasks';
@@ -30,20 +25,8 @@ class TasksRepository implements DataRepository {
   static const _title = DataStrings.title;
   static const _status = DataStrings.status;
 
-  Future<void> _initializeDatabase() async {
-    try {
-      await createDatabase();
-      _databaseInitCompleter.complete();
-      _isDatabaseInitialized = true;
-      print("✅ Database initialized");
-    } catch (e) {
-      _databaseInitCompleter.completeError(e);
-      print("❌ Database initialization failed: $e");
-    }
-  }
-
   @override
-  Future<void> createDatabase() async {
+  Future<void> createDatabase(VoidCallback onLoad) async {
     final password = await _repository.getEncryptionKey();
 
     openDatabase(
@@ -58,7 +41,7 @@ class TasksRepository implements DataRepository {
         // status String
 
         print('database created');
-        database
+        await database
             .execute(
             'CREATE TABLE $_tasks ('
                 '$_id INTEGER PRIMARY KEY, $_title $_text, $_date $_text, $_time $_text, $_status $_text)')
@@ -79,6 +62,7 @@ class TasksRepository implements DataRepository {
       },
       onOpen: (database) {
         _database = database;
+        onLoad();
         print('database opened');
       },
     );
@@ -117,7 +101,6 @@ class TasksRepository implements DataRepository {
     }
   }
 
-
   @override
   Future<int> getTaskPosition({
     required String date,
@@ -125,9 +108,6 @@ class TasksRepository implements DataRepository {
     required String status,
   }) async {
     try {
-      if (!_isDatabaseInitialized) {
-        await _databaseInitCompleter.future;
-      }
       // count = عدد المهام التي وقتها < وقت المهمة الجديدة
       final result = await _database.rawQuery('''
         SELECT COUNT(*) as position 

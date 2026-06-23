@@ -5,7 +5,7 @@ import '../domain/useCases/useCase_operations.dart';
 import 'package:todo_app/presentation/screens/home_screen.dart';
 import '../data/repositories_impl/local/database_repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../presentation/utils/helpers/pagination_state_manager.dart';
+import '../utils/pagination_state_manager.dart';
 import '../data/repositories_impl/local/flutter_secure_storage_repository.dart';
 
 

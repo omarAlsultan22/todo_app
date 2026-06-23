@@ -17,11 +17,21 @@ class TasksCubit extends Cubit<TasksState> {
     required GetTasksUseCase useCase,
   })
       : _useCase = useCase,
-        super(TasksState.initial());
+        super(TasksState.initial()) {
+    _initializeDatabase();
+  }
 
   static TasksCubit get(context) => BlocProvider.of(context);
 
   static const _limit = UiSizes.defaultPageSize;
+
+  Future<void> _initializeDatabase() async {
+    try {
+      await _useCase.executeInitializeDatabase(() => changeScreen(index: 0));
+    } catch (e, stackTrace) {
+      _errorHandler(e, stackTrace);
+    }
+  }
 
   Future<void> _loadTasks({int limit = 0}) async {
     final tasks = await _useCase.executeGetData(

@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import '../../../utils/time_helper.dart';
 import '../form/default_form_field.dart';
 import '../../screens/new_tasks_screen.dart';
 import '../../screens/done_tasks_screen.dart';
@@ -84,7 +85,7 @@ class _HomeLayoutState extends State<HomeLayout> {
               widget.insertData(
                 context: context,
                 title: _titleController.text,
-                time: _timeController.text,
+                time: TimeHelper.formatTo12Hour(_timeController.text),
                 date: _dateController.text,
               );
               widget.toggleBottomSheet(false);

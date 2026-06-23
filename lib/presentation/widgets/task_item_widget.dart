@@ -1,3 +1,4 @@
+import 'package:todo_app/utils/time_helper.dart';
 import '../../data/models/task_model.dart';
 import 'package:flutter/material.dart';
 import '../constants/ui_colors.dart';
@@ -27,7 +28,7 @@ class TaskItemWidget extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 40.0,
-              child: Text(task.time
+              child: Text(TimeHelper.formatTo12Hour(task.time)
               ),
             ),
             _spacingHorizontal,

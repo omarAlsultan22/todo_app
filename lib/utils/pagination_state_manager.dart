@@ -1,5 +1,5 @@
 import 'package:todo_app/data/models/task_model.dart';
-import '../../../data/models/category_data.dart';
+import '../data/models/category_data.dart';
 
 
 class PaginationHandler {
