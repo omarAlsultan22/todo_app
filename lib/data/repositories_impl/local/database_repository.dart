@@ -62,10 +62,11 @@ class TasksRepository implements DataRepository {
       },
       onOpen: (database) {
         _database = database;
-        onLoad();
         print('database opened');
       },
-    );
+    ).then((_) async {
+      onLoad();
+    });
   }
 
   @override

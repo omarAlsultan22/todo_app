@@ -57,16 +57,17 @@ class TasksState {
     return tabsData[index];
   }
 
-  List<TaskModel> insertTaskByPosition(int position, List<TaskModel> tasks,
-      TaskModel newTask) {
-    final tasksModels = tasks;
-    if(tasksModels.isEmpty){
+  List<TaskModel> insertTaskByPosition(int position,
+      List<TaskModel> tasks,
+      TaskModel newTask,) {
+    if (tasks.isEmpty) {
+      List<TaskModel> tasksModels = [];
       tasksModels.add(newTask);
+      return tasksModels;
+    } else {
+      tasks.insert(position, newTask);
+      return tasks;
     }
-    else {
-      tasksModels.insert(position, newTask);
-    }
-    return tasksModels;
   }
 
   CategoryData deleteTask(int id) {

@@ -27,8 +27,10 @@ class TasksCubit extends Cubit<TasksState> {
 
   Future<void> _initializeDatabase() async {
     try {
-      await _useCase.executeInitializeDatabase(() => changeScreen(index: 0));
-    } catch (e, stackTrace) {
+      await _useCase.executeInitializeDatabase(() => changeScreen(index: 0)
+      );
+    }
+    catch (e, stackTrace) {
       _errorHandler(e, stackTrace);
     }
   }
@@ -114,13 +116,14 @@ class TasksCubit extends Cubit<TasksState> {
     // 4. إضافة المهمة في الموقع الآمن
     final updatedTasks = state.insertTaskByPosition(
         position, currentTasks, taskModel);
+
     // 5. تحديث الحالة
     final newTabData = tabData.copyWith(
       tasks: updatedTasks,
     );
 
-    state.updateTab(index, newTabData);
-    emit(state.copyWith(subState: SuccessState()));
+    final updatedState = state.updateTab(index, newTabData);
+    emit(updatedState.copyWith(subState: SuccessState()));
   }
 
   Future<void> changeScreen({required int index}) async {

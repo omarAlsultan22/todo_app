@@ -8,6 +8,7 @@ class TimeHelper {
       final minute = parts[1];
       final period = hour >= 12 ? 'PM' : 'AM';
       final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+      print('12Hour');
       return '$displayHour:$minute $period';
     } catch (e) {
       return time24; // fallback
@@ -30,6 +31,7 @@ class TimeHelper {
         hour24 = 0;
       }
 
+      print('${hour24.toString().padLeft(2, '0')}:$minute');
       return '${hour24.toString().padLeft(2, '0')}:$minute';
     } catch (e) {
       return time12; // fallback
