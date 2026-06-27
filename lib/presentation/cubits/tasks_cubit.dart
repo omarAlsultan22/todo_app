@@ -36,18 +36,23 @@ class TasksCubit extends Cubit<TasksState> {
   }
 
   Future<void> _loadTasks({int limit = 0}) async {
-    final tasks = await _useCase.executeGetData(
-        limit: _limit - limit,
-        status: state.status,
-        categoryData: state.currentTabData
-    );
-    if (tasks.productsIsNotEmpty || state.tasksIsNotEmpty) {
-      emit(
-          state.updateTab(state.currentTabIndex, tasks)
-              .copyWith(subState: SuccessState()));
-      return;
+    try {
+      final tasks = await _useCase.executeGetData(
+          limit: _limit - limit,
+          status: state.status,
+          categoryData: state.currentTabData
+      );
+      if (tasks.productsIsNotEmpty || state.tasksIsNotEmpty) {
+        emit(
+            state.updateTab(state.currentTabIndex, tasks)
+                .copyWith(subState: SuccessState()));
+        return;
+      }
+      emit(state.copyWith(subState: InitialState()));
     }
-    emit(state.copyWith(subState: InitialState()));
+    catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> _errorHandler(Object e, StackTrace stackTrace) async {

@@ -25,8 +25,7 @@ class MyApp extends StatelessWidget {
         repository: repository, paginationHandler: paginationHandler);
     return BlocProvider<TasksCubit>(
         create: (BuildContext context) =>
-        TasksCubit(useCase: useCase)
-          ..changeScreen(index: 0),
+        TasksCubit(useCase: useCase),
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           home: HomeScreen(),
