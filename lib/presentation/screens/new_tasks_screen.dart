@@ -5,6 +5,7 @@ import '../widgets/lists/list_builder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/states/error_state_widget.dart';
 import '../widgets/states/initial_state_widget.dart';
+import 'package:todo_app/presentation/widgets/states/loading_state_widget.dart';
 
 
 class NewTasksScreen extends StatelessWidget {
@@ -17,7 +18,7 @@ class NewTasksScreen extends StatelessWidget {
         final cubit = TasksCubit.get(context);
         return state.when<Widget>(
             onInitial: () => const InitialStateWidget(),
-            onLoading: () => const Center(child: CircularProgressIndicator()),
+            onLoading: () => const LoadingStateWidget(),
             onLoaded: (newData, bottomSheetState, messageResult) =>
                 ListBuilder(
                   isLocked: false,

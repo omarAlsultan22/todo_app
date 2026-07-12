@@ -7,7 +7,7 @@ class InitialStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -16,7 +16,7 @@ class InitialStateWidget extends StatelessWidget {
             size: 100.0,
             color: UiColors.lightGrey,
           ),
-          const Text(
+          Text(
             'No Tasks Yet, Please Add Some Tasks',
             style: TextStyle(
               fontSize: 16.0,
