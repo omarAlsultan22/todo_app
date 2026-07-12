@@ -1,16 +1,18 @@
 import '../states/tasks_state.dart';
 import 'package:flutter/material.dart';
-import '../../errors/error_handler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/constants/app_icons.dart';
+import 'package:todo_app/utils/position_utils.dart';
 import 'package:todo_app/data/models/task_model.dart';
 import '../../domain/useCases/useCase_operations.dart';
+import 'package:todo_app/data/models/message_result.dart';
 import '../../data/models/ChangeBottomSheetStateModel.dart';
 import 'package:todo_app/presentation/constants/ui_sizes.dart';
 import 'package:todo_app/presentation/states/app_sub_states.dart';
+import 'package:todo_app/presentation/mixins/error_handler_mixin.dart';
 
 
-class TasksCubit extends Cubit<TasksState> {
+class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
   final GetTasksUseCase _useCase;
 
   TasksCubit({
@@ -31,7 +33,16 @@ class TasksCubit extends Cubit<TasksState> {
       );
     }
     catch (e, stackTrace) {
-      _errorHandler(e, stackTrace);
+      handleError(
+          error: e,
+          stackTrace: stackTrace,
+          onError: (failure) =>
+              state.copyWith(
+                  subState: ErrorState(
+                      failure: failure
+                  )
+              )
+      );
     }
   }
 
@@ -55,40 +66,12 @@ class TasksCubit extends Cubit<TasksState> {
     }
   }
 
-  Future<void> _errorHandler(Object e, StackTrace stackTrace) async {
-    final errorHandler = ErrorHandler(
-        error: e,
-        stackTrace: stackTrace
-    );
-    final exception = errorHandler.handleException();
-    emit(state.copyWith(subState: ErrorState(failure: exception)));
-  }
-
   void _updateTasks(int id) {
     final newCategoryData = state.deleteTask(id);
     emit(state.updateTab(state.currentTabIndex, newCategoryData));
     if (state.length == _limit - 1) {
       _loadTasks(limit: state.length);
     }
-  }
-
-  int _calculateSafePosition({
-    required int position,
-    required int tasksLength,
-  }) {
-    if (tasksLength == 0) {
-      return 0;
-    }
-
-    if (position >= 0 && position <= tasksLength) {
-      return position;
-    }
-
-    if (position < 0) {
-      print('⚠️ Position ($position) < 0, adding at beginning');
-      return 0;
-    }
-    return tasksLength;
   }
 
   Future<void> _addNewTask({
@@ -109,7 +92,7 @@ class TasksCubit extends Cubit<TasksState> {
     final currentTasks = tabData.tasks;
 
     // 3. حساب الموقع الآمن للإضافة
-    final safePosition = _calculateSafePosition(
+    final safePosition = PositionUtils.calculateSafePosition(
       position: position,
       tasksLength: currentTasks.length,
     );
@@ -143,7 +126,16 @@ class TasksCubit extends Cubit<TasksState> {
       await _loadTasks();
     }
     catch (e, stackTrace) {
-      _errorHandler(e, stackTrace);
+      handleError(
+          error: e,
+          stackTrace: stackTrace,
+          onError: (failure) =>
+              state.copyWith(
+                  subState: ErrorState(
+                      failure: failure
+                  )
+              )
+      );
     }
   }
 
@@ -162,7 +154,17 @@ class TasksCubit extends Cubit<TasksState> {
       _addNewTask(index: index, taskModel: newTask);
     }
     catch (e, stackTrace) {
-      _errorHandler(e, stackTrace);
+      handleError(
+          error: e,
+          stackTrace: stackTrace,
+          onError: (failure) =>
+              state.copyWith(
+                  messageResult: MessageResult.error(
+                      error: failure,
+                      message: 'Insert operation failed'
+                  )
+              )
+      );
     }
   }
 
@@ -189,10 +191,22 @@ class TasksCubit extends Cubit<TasksState> {
             status: status, id: id);
         _updateTasks(id);
         _addNewTask(index: index, taskModel: taskModel);
+        emit(state.copyWith(messageResult: MessageResult.success(
+            message: 'Successfully added to $status tasks')));
       }
     }
     catch (e, stackTrace) {
-      _errorHandler(e, stackTrace);
+      handleError(
+          error: e,
+          stackTrace: stackTrace,
+          onError: (failure) =>
+              state.copyWith(
+                  messageResult: MessageResult.error(
+                      error: failure,
+                      message: 'Update process failed'
+                  )
+              )
+      );
     }
   }
 
@@ -200,11 +214,21 @@ class TasksCubit extends Cubit<TasksState> {
     required int id,
   }) async {
     try {
-      await _useCase.executeDeleteData(id: id);
       _updateTasks(id);
+      await _useCase.executeDeleteData(id: id);
     }
     catch (e, stackTrace) {
-      _errorHandler(e, stackTrace);
+      handleError(
+          error: e,
+          stackTrace: stackTrace,
+          onError: (failure) =>
+              state.copyWith(
+                  messageResult: MessageResult.error(
+                      error: failure,
+                      message: 'Deletion process failed'
+                  )
+              )
+      );
     }
   }
 

@@ -30,11 +30,12 @@ class MessageResult {
   }
 
   factory MessageResult.error({
-    required AppException? error,
+    required String message,
+    required AppException error,
   }){
     return MessageResult(
         color: Color(0xFFC62828),
-        message: 'failed: ${error!.error}'
+        message: '$message: ${error!.error}'
     );
   }
 }
