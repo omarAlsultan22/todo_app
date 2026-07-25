@@ -14,7 +14,7 @@ class ListBuilder extends StatefulWidget {
   final bool hasMore;
   final List<TaskModel> tasks;
   final VoidCallback onScroll;
-  final MessageResult messageResult;
+  final MessageResult? messageResult;
   final Function (int) deleteData;
   final Function (int, int, String) updateData;
 
@@ -45,7 +45,7 @@ class _ListBuilderState extends State<ListBuilder> {
   @override
   void didUpdateWidget(covariant ListBuilder oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.messageResult.message != null) {
+    if (widget.messageResult!.message != null) {
       _showMessageResult(widget.messageResult);
     }
     setState(() {});
@@ -67,9 +67,9 @@ class _ListBuilderState extends State<ListBuilder> {
     super.dispose();
   }
 
-  void _showMessageResult(MessageResult messageResult) {
+  void _showMessageResult(MessageResult? messageResult) {
     ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(messageResult.message!),
+        SnackBar(content: Text(messageResult!.message ?? 'An error occurred'),
             backgroundColor: messageResult.color!)
     );
   }

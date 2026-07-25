@@ -1,4 +1,3 @@
-import 'app_sub_states.dart';
 import '../constants/ui_strings.dart';
 import 'base/main_app_sub_state.dart';
 import '../../data/models/category_data.dart';
@@ -11,8 +10,7 @@ import '../../data/models/ChangeBottomSheetStateModel.dart';
 class TasksState {
   final BottomSheetState? bottomSheetState;
   final Map<int, CategoryData> tabsData;
-  final MessageResult messageResult;
-  final MainAppSubState subState;
+  final MessageResult? messageResult;
   final List<String> statusesList;
   final int currentTabIndex;
 
@@ -22,7 +20,6 @@ class TasksState {
     required this.messageResult,
     required this.statusesList,
     required this.tabsData,
-    required this.subState,
   });
 
   factory TasksState.initial(){
@@ -32,7 +29,6 @@ class TasksState {
           for (var i = 0; i < 3; i++)
             i: const CategoryData()
         },
-        subState: InitialState(),
         statusesList: UiStrings.statusList,
         messageResult: MessageResult.initial(),
         bottomSheetState: const BottomSheetState()
@@ -43,6 +39,10 @@ class TasksState {
 
   bool get tasksIsNotEmpty => currentTabData!.productsIsNotEmpty;
 
+  MainAppSubState get subState => currentTabData!.subState;
+
+  String get status => statusesList[currentTabIndex];
+
   List<TaskModel> get tasks => currentTabData!.tasks;
 
   bool get hasMore => currentTabData!.hasMore;
@@ -50,8 +50,6 @@ class TasksState {
   int get length => currentTabData!.length;
 
   int get offset => currentTabData!.offset;
-
-  String get status => statusesList[currentTabIndex];
 
   CategoryData? getTabData(int index) {
     return tabsData[index];
@@ -103,10 +101,9 @@ class TasksState {
     int? currentTabIndex,
   }) {
     return TasksState(
-        subState: subState ?? this.subState,
+        messageResult: messageResult,
         tabsData: tabsData ?? this.tabsData,
         statusesList: statusesList ?? this.statusesList,
-        messageResult: messageResult ?? this.messageResult,
         currentTabIndex: currentTabIndex ?? this.currentTabIndex,
         bottomSheetState: bottomSheetState ?? this.bottomSheetState
     );
@@ -115,7 +112,7 @@ class TasksState {
   R when<R>({
     required R Function() onInitial,
     required R Function() onLoading,
-    required R Function(CategoryData?, BottomSheetState?, MessageResult) onLoaded,
+    required R Function(CategoryData?, BottomSheetState?, MessageResult?) onLoaded,
     required R Function(AppException) onError,
   }) {
     return subState.when(

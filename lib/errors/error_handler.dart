@@ -1,6 +1,6 @@
 import 'exceptions/unknown_exception.dart';
 import 'exceptions/base/app_exception.dart';
-import 'exceptions/DatabaseAppException.dart';
+import 'exceptions/database_app_exception.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
 

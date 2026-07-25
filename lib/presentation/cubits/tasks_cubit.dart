@@ -36,30 +36,43 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
       handleError(
           error: e,
           stackTrace: stackTrace,
-          onError: (failure) =>
-              state.copyWith(
-                  subState: ErrorState(
-                      failure: failure
-                  )
-              )
+          onError: (failure) {
+            final currentTabData = state.currentTabData;
+            final newTabData = currentTabData!.copyWith(subState: ErrorState(
+                failure: failure
+            ));
+            return state.updateTab(state.currentTabIndex, newTabData);
+          }
       );
     }
   }
 
   Future<void> _loadTasks({int limit = 0}) async {
     try {
+      final currentTabData = state.currentTabData;
+
       final tasks = await _useCase.executeGetData(
           limit: _limit - limit,
           status: state.status,
           categoryData: state.currentTabData
       );
       if (tasks.productsIsNotEmpty || state.tasksIsNotEmpty) {
+        final newTabData = currentTabData!.copyWith(
+            subState: const SuccessState());
         emit(
-            state.updateTab(state.currentTabIndex, tasks)
-                .copyWith(subState: SuccessState()));
+            state.updateTab(
+                state.currentTabIndex, newTabData
+            )
+        );
         return;
       }
-      emit(state.copyWith(subState: InitialState()));
+      final newTabData = currentTabData!.copyWith(
+          subState: const InitialState());
+      emit(
+          state.updateTab(
+              state.currentTabIndex, newTabData
+          )
+      );
     }
     catch (e) {
       rethrow;
@@ -107,19 +120,22 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
 
     // 5. تحديث الحالة
     final newTabData = tabData.copyWith(
-      tasks: updatedTasks,
+        tasks: updatedTasks, subState: const SuccessState()
     );
 
-    final updatedState = state.updateTab(index, newTabData);
-    emit(updatedState.copyWith(subState: SuccessState()));
+    emit(state.updateTab(index, newTabData));
   }
 
   Future<void> changeScreen({required int index}) async {
     emit(state.copyWith(
         currentTabIndex: index));
+    final currentTabData = state.currentTabData;
+    emit(state.updateTab(index, currentTabData!));
 
     if (!state.tasksIsNotEmpty) {
-      emit(state.copyWith(subState: LoadingState()));
+      final newTabData = currentTabData.copyWith(
+          subState: const LoadingState());
+      emit(state.updateTab(index, newTabData));
     }
 
     try {
@@ -129,12 +145,12 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
       handleError(
           error: e,
           stackTrace: stackTrace,
-          onError: (failure) =>
-              state.copyWith(
-                  subState: ErrorState(
-                      failure: failure
-                  )
-              )
+          onError: (failure) {
+            final newTabData = currentTabData.copyWith(subState: ErrorState(
+                failure: failure
+            ));
+            return state.updateTab(index, newTabData);
+          }
       );
     }
   }
