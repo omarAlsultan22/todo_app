@@ -11,9 +11,12 @@ import 'package:todo_app/presentation/widgets/states/loading_state_widget.dart';
 class ArchivedTasksScreen extends StatelessWidget {
   const ArchivedTasksScreen({super.key});
 
+  static const _screenIndex = 2;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TasksCubit, TasksState>(
+      buildWhen: (previous, current) => current.currentTabIndex == _screenIndex,
       builder: (context, state) {
         final cubit = TasksCubit.get(context);
         return state.when<Widget>(

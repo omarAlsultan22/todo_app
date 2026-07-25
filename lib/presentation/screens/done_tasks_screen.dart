@@ -11,9 +11,12 @@ import '../widgets/states/loading_state_widget.dart';
 class DoneTasksScreen extends StatelessWidget {
   const DoneTasksScreen({super.key});
 
+  static const _screenIndex = 1;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TasksCubit, TasksState>(
+      buildWhen: (previous, current) => current.currentTabIndex == _screenIndex,
       builder: (context, state) {
         final cubit = TasksCubit.get(context);
         return state.when<Widget>(
