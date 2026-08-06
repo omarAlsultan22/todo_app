@@ -22,9 +22,9 @@ class HomeScreen extends StatelessWidget {
               required date,
               required context}) =>
                 cubit.insertData(
-                    time: time,
-                    date: date,
-                    title: title,
+                  time: time,
+                  date: date,
+                  title: title,
                 ),
             bottomSheetState: state.bottomSheetState,
             onChange: (index) => cubit.changeScreen(index: index),
