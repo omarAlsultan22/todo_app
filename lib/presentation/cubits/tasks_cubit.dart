@@ -56,9 +56,9 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
           status: state.status,
           categoryData: state.currentTabData
       );
-      if (tasks.productsIsNotEmpty || state.tasksIsNotEmpty) {
+      if (tasks.tasksIsEmpty && state.tasksIsEmpty) {
         final newTabData = currentTabData!.copyWith(
-            subState: const SuccessState());
+            subState: const InitialState());
         emit(
             state.updateTab(
                 state.currentTabIndex, newTabData
@@ -66,8 +66,9 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
         );
         return;
       }
+
       final newTabData = currentTabData!.copyWith(
-          subState: const InitialState());
+          subState: const SuccessState());
       emit(
           state.updateTab(
               state.currentTabIndex, newTabData
@@ -132,7 +133,7 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
     final currentTabData = state.currentTabData;
     emit(state.updateTab(index, currentTabData!));
 
-    if (!state.tasksIsNotEmpty) {
+    if (state.tasksIsEmpty) {
       final newTabData = currentTabData.copyWith(
           subState: const LoadingState());
       emit(state.updateTab(index, newTabData));

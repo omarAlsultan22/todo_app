@@ -37,7 +37,7 @@ class TasksState {
 
   CategoryData? get currentTabData => tabsData[currentTabIndex];
 
-  bool get tasksIsNotEmpty => currentTabData!.productsIsNotEmpty;
+  bool get tasksIsEmpty => currentTabData!.tasksIsEmpty;
 
   MainAppSubState get subState => currentTabData!.subState;
 

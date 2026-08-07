@@ -18,7 +18,7 @@ class CategoryData {
 
   int get length => tasks.length;
 
-  bool get productsIsNotEmpty => tasks.isNotEmpty;
+  bool get tasksIsEmpty => tasks.isEmpty;
 
   CategoryData copyWith({
     MainAppSubState? subState,

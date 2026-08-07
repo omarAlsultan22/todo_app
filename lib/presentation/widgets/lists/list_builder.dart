@@ -1,12 +1,10 @@
 import '../task_item_widget.dart';
 import 'package:flutter/material.dart';
 import '../../constants/ui_strings.dart';
-import '../states/initial_state_widget.dart';
 import '../../../data/models/task_model.dart';
 import '../../../data/models/message_result.dart';
 import 'package:todo_app/presentation/constants/ui_sizes.dart';
 import 'package:todo_app/presentation/constants/ui_colors.dart';
-import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 
 
 class ListBuilder extends StatefulWidget {
@@ -21,9 +19,9 @@ class ListBuilder extends StatefulWidget {
   ListBuilder({
     super.key,
     required this.tasks,
+    this.isLocked = false,
     required this.hasMore,
     required this.onScroll,
-    required this.isLocked,
     required this.updateData,
     required this.deleteData,
     required this.messageResult
@@ -79,40 +77,35 @@ class _ListBuilderState extends State<ListBuilder> {
     required List<TaskModel> tasks,
     ScrollController? scrollController
   }) {
-    return ConditionalBuilder(
-        condition: widget.tasks.isNotEmpty,
-        builder: (context) =>
-            ListView.separated(
-                controller: scrollController,
-                itemBuilder: (context, index) {
-                  if (index < tasks.length) {
-                    return _buildTaskItem(widget.tasks[index], context);
-                  }
-                  else {
-                    if (tasks.length >= 15) {
-                      return Center(
-                        child: hasMore!
-                            ? const CircularProgressIndicator() :
-                        const SizedBox(),
-                      );
-                    }
-                  }
-                  return null;
-                },
-                separatorBuilder: (context, index) =>
-                    Padding(
-                      padding: const EdgeInsetsDirectional.only(
-                        start: UiSizes.padding,
-                      ),
-                      child: Container(
-                        width: double.infinity,
-                        height: 1.0,
-                        color: UiColors.lightGrey,
-                      ),
-                    ),
-                itemCount: tasks.length + 1),
-        fallback: (context) =>
-            InitialStateWidget()
+    return ListView.separated(
+        controller: scrollController,
+        itemBuilder: (context, index) {
+          if (index < tasks.length) {
+            return _buildTaskItem(widget.tasks[index], context);
+          }
+          else {
+            if (tasks.length >= 15) {
+              return Center(
+                child: hasMore!
+                    ? const CircularProgressIndicator() :
+                const SizedBox(),
+              );
+            }
+          }
+          return null;
+        },
+        separatorBuilder: (context, index) =>
+            Padding(
+              padding: const EdgeInsetsDirectional.only(
+                start: UiSizes.padding,
+              ),
+              child: Container(
+                width: double.infinity,
+                height: 1.0,
+                color: UiColors.lightGrey,
+              ),
+            ),
+        itemCount: tasks.length + 1
     );
   }
 

@@ -3,7 +3,6 @@ import '../../states/tasks_state.dart';
 import 'package:flutter/cupertino.dart';
 import '../../widgets/lists/list_builder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../widgets/states/error_state_widget.dart';
 import '../../widgets/states/initial_state_widget.dart';
 import '../../widgets/states/loading_state_widget.dart';
 
@@ -40,7 +39,7 @@ abstract class BaseTabScreen extends StatelessWidget {
                       cubit.deleteData(id: id),
                 ),
             onError: (error) =>
-                ErrorStateWidget(error: error.message,
+                error.buildErrorWidget(
                     onRetry: () =>
                         cubit.loadMoreData()
                 )
