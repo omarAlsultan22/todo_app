@@ -1,17 +1,18 @@
 import 'app/my_app.dart';
+import 'config/bloc_observer.dart';
 import 'errors/error_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'data/repositories_impl/local/flutter_secure_storage_repository.dart';
+import 'config/initialization_controller.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app/presentation/widgets/build_snack_bar.dart';
 
 
-Future<void> main() async {
-  final flutterSecureStorage = FlutterSecureStorage();
-  final repository = FlutterSecureStorageRepository(
-      flutterSecureStorage: flutterSecureStorage);
+void main() async {
+  Bloc.observer = MyBlocObserver();
+  final initializationController = InitializationController();
 
   try {
-    await repository.saveEncryptionKey();
+    await initializationController.init();
     runApp(const MyApp());
   }
   catch (e, stackTrace) {
@@ -22,20 +23,28 @@ Future<void> main() async {
     final exception = errorHandler.handleException();
     runApp(
         MaterialApp(
-          debugShowCheckedModeBanner: false,
-          home: Scaffold(
-            body: exception.buildErrorWidget(
-                onRetry: () => runApp(const MyApp())
-            ),
-          ),
+            debugShowCheckedModeBanner: false,
+            home: Builder(
+              builder: (context) =>
+                  Scaffold(
+                    body: exception.buildErrorWidget(
+                      onRetry: () async {
+                        try {
+                          await initializationController.retryInit();
+                          runApp(const MyApp());
+                        } catch (e) {
+                          BuildSnackBar.show(
+                              message: 'Initialization failed',
+                              context: context,
+                              backgroundColor: Color(0xFFC62828)
+                          );
+                        }
+                      },
+                    ),
+                  ),
+            )
         )
     );
   }
 }
-
-
-
-
-
-
 
