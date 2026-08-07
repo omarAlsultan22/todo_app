@@ -10,24 +10,24 @@ class InitializationController {
 
   InitializationController._internal();
 
-  late FlutterSecureStorage flutterSecureStorage;
-  late FlutterSecureStorageRepository repository;
+  late FlutterSecureStorage _flutterSecureStorage;
+  late FlutterSecureStorageRepository _repository;
 
   bool _isInitialized = false;
 
   Future<void> init() async {
     if (_isInitialized) return;
 
-    flutterSecureStorage = FlutterSecureStorage();
-    repository = FlutterSecureStorageRepository(
-        flutterSecureStorage: flutterSecureStorage);
+    _flutterSecureStorage = FlutterSecureStorage();
+    _repository = FlutterSecureStorageRepository(
+        flutterSecureStorage: _flutterSecureStorage);
 
-    await repository.saveEncryptionKey();
+    await _repository.saveEncryptionKey();
 
     _isInitialized = true;
   }
 
   Future<void> retryInit() async {
-    await repository.saveEncryptionKey();
+    await _repository.saveEncryptionKey();
   }
 }
