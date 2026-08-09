@@ -1,4 +1,4 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../di/service _locator.dart';
 import '../data/repositories_impl/local/flutter_secure_storage_repository.dart';
 
 
@@ -10,7 +10,6 @@ class InitializationController {
 
   InitializationController._internal();
 
-  late FlutterSecureStorage _flutterSecureStorage;
   late FlutterSecureStorageRepository _repository;
 
   bool _isInitialized = false;
@@ -18,9 +17,7 @@ class InitializationController {
   Future<void> init() async {
     if (_isInitialized) return;
 
-    _flutterSecureStorage = FlutterSecureStorage();
-    _repository = FlutterSecureStorageRepository(
-        flutterSecureStorage: _flutterSecureStorage);
+    _repository = sl<FlutterSecureStorageRepository>();
 
     await _repository.saveEncryptionKey();
 
