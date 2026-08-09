@@ -1,12 +1,8 @@
+import '../di/service _locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../presentation/cubits/tasks_cubit.dart';
-import '../domain/useCases/useCase_operations.dart';
 import 'package:todo_app/presentation/screens/home_screen.dart';
-import '../data/repositories_impl/local/database_repository.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../utils/pagination_state_manager.dart';
-import '../data/repositories_impl/local/flutter_secure_storage_repository.dart';
 
 
 class MyApp extends StatelessWidget {
@@ -15,17 +11,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final flutterSecureStorage = FlutterSecureStorage();
-    final keysRepository = FlutterSecureStorageRepository(
-        flutterSecureStorage: flutterSecureStorage);
-    final repository = TasksRepository(
-        repository: keysRepository);
-    final paginationHandler = PaginationHandler();
-    final useCase = GetTasksUseCase(
-        repository: repository, paginationHandler: paginationHandler);
     return BlocProvider<TasksCubit>(
         create: (BuildContext context) =>
-        TasksCubit(useCase: useCase),
+        sl<TasksCubit>(),
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           home: HomeScreen(),
