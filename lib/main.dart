@@ -19,6 +19,7 @@ void main() async {
     final errorHandler = ErrorHandler(
       error: e,
       stackTrace: stackTrace,
+      operationType: 'components'
     );
     final exception = errorHandler.handleException();
     runApp(

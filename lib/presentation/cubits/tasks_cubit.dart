@@ -36,6 +36,7 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
       handleError(
           error: e,
           stackTrace: stackTrace,
+          operationType: 'initialization',
           onError: (failure) {
             final currentTabData = state.currentTabData;
             final newTabData = currentTabData!.copyWith(subState: ErrorState(
@@ -146,6 +147,7 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
       handleError(
           error: e,
           stackTrace: stackTrace,
+          operationType: 'load',
           onError: (failure) {
             final newTabData = currentTabData.copyWith(subState: ErrorState(
                 failure: failure
@@ -170,15 +172,16 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
       );
       _addNewTask(index: index, taskModel: newTask);
     }
+
     catch (e, stackTrace) {
       handleError(
           error: e,
           stackTrace: stackTrace,
+          operationType: 'insert',
           onError: (failure) =>
               state.copyWith(
                   messageResult: MessageResult.error(
-                      error: failure,
-                      message: 'Insert operation failed'
+                      message: failure.message!
                   )
               )
       );
@@ -190,10 +193,18 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
     try {
       await _loadTasks();
     }
-    catch (e) {
-      Future.delayed(const Duration(seconds: 3), () {
-        loadMoreData();
-      });
+    catch (e, stackTrace) {
+      handleError(
+          error: e,
+          stackTrace: stackTrace,
+          operationType: 'loadMore',
+          onError: (failure) =>
+              state.copyWith(
+                  messageResult: MessageResult.error(
+                      message: failure.message!
+                  )
+              )
+      );
     }
   }
 
@@ -216,11 +227,11 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
       handleError(
           error: e,
           stackTrace: stackTrace,
+          operationType: 'update',
           onError: (failure) =>
               state.copyWith(
                   messageResult: MessageResult.error(
-                      error: failure,
-                      message: 'Update process failed'
+                      message: failure.message!
                   )
               )
       );
@@ -238,11 +249,11 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
       handleError(
           error: e,
           stackTrace: stackTrace,
+          operationType: 'delete',
           onError: (failure) =>
               state.copyWith(
                   messageResult: MessageResult.error(
-                      error: failure,
-                      message: 'Deletion process failed'
+                      message: failure.message!
                   )
               )
       );

@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../errors/exceptions/base/app_exception.dart';
 
 
 class MessageResult {
@@ -31,11 +30,10 @@ class MessageResult {
 
   factory MessageResult.error({
     required String message,
-    required AppException error,
   }){
     return MessageResult(
         color: Color(0xFFC62828),
-        message: '$message: ${error!.error}'
+        message: message
     );
   }
 }
