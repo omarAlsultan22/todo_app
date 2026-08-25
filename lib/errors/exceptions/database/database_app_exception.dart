@@ -4,6 +4,7 @@ import 'package:todo_app/errors/exceptions/base/app_exception.dart';
 
 class DatabaseAppException extends AppException {
   final String? operationType;
+
   DatabaseAppException({super.message, this.operationType});
 
   static final Map<String, AppException> _sqlMap = {
@@ -12,7 +13,6 @@ class DatabaseAppException extends AppException {
     'update': UpdateException(),
     'delete': DeleteException(),
     'loadMore': LoadMoreException(),
-    'components': ComponentsException(),
     'initialization': InitializationException(),
   };
 
@@ -28,11 +28,5 @@ class DatabaseAppException extends AppException {
   }
 }
 
-class ComponentsException extends AppException {
-  const ComponentsException(
-      ) : super(
-    message: 'The application component initialization process failed.',
-    code: 'INSERT_ERROR',
-  );
-}
+
 

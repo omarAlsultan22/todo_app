@@ -1,7 +1,8 @@
 import 'exceptions/unknown_exception.dart';
 import 'exceptions/base/app_exception.dart';
-import 'exceptions/database/database_app_exception.dart';
+import 'exceptions/components_exception.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'exceptions/database/database_app_exception.dart';
 
 
 class ErrorHandler {
