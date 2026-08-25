@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
                   title: title,
                 ),
             bottomSheetState: state.bottomSheetState,
-            onChange: (index) => cubit.changeScreen(index: index),
+            onChange: (index) => cubit.loadCurrentTabData(index: index),
             toggleBottomSheet: (isVisible) =>
                 cubit.toggleBottomSheet(isVisible: isVisible),
           );

@@ -29,7 +29,7 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
 
   Future<void> _initializeDatabase() async {
     try {
-      await _useCase.executeInitializeDatabase(() => changeScreen(index: 0)
+      await _useCase.executeInitializeDatabase(() => loadCurrentTabData(index: 0)
       );
     }
     catch (e, stackTrace) {
@@ -128,17 +128,26 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
     emit(state.updateTab(index, newTabData));
   }
 
-  Future<void> changeScreen({required int index}) async {
-    emit(state.copyWith(
-        currentTabIndex: index));
+  Future<void> switchTabAndLoadData({required int index}) async {
+    changeTab(index);
+    await loadCurrentTabData(index: index);
+  }
+
+  void changeTab(int index) {
+    if (state.currentTabIndex != index) {
+      emit(state.copyWith(currentTabIndex: index));
+    }
+  }
+
+  Future<void> loadCurrentTabData({required int index}) async {
+    if (!state.tasksIsEmpty) return;
+
     final currentTabData = state.currentTabData;
     emit(state.updateTab(index, currentTabData!));
 
-    if (state.tasksIsEmpty) {
       final newTabData = currentTabData.copyWith(
           subState: const LoadingState());
       emit(state.updateTab(index, newTabData));
-    }
 
     try {
       await _loadTasks();
