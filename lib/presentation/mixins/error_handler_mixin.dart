@@ -9,8 +9,8 @@ mixin ErrorHandlerMixin<State> on Cubit<State> {
     required StackTrace stackTrace,
     required State Function(AppException failure) onError,
   }) {
-    final errorHandler = ErrorLogger(error: error, stackTrace: stackTrace);
-    final exception = errorHandler.logAndReturn();
+    final errorLogger = ErrorLogger(error: error, stackTrace: stackTrace);
+    final exception = errorLogger.logAndReturn();
     emit(onError(exception));
   }
 }
