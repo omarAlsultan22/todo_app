@@ -1,10 +1,11 @@
 import 'app/my_app.dart';
 import 'config/bloc_observer.dart';
-import 'errors/error_handler.dart';
+import 'errors/error_logger.dart';
 import 'package:flutter/material.dart';
 import 'config/initialization_controller.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/presentation/widgets/build_snack_bar.dart';
+import 'package:todo_app/errors/exceptions/components_exception.dart';
 
 
 void main() async {
@@ -15,13 +16,9 @@ void main() async {
     await initializationController.init();
     runApp(const MyApp());
   }
-  catch (e, stackTrace) {
-    final errorHandler = ErrorHandler(
-      error: e,
-      stackTrace: stackTrace,
-      operationType: 'components'
-    );
-    final exception = errorHandler.handleException();
+  on ComponentsException catch (e, stackTrace) {
+    final errorHandler = ErrorLogger(error: e, stackTrace: stackTrace);
+    final exception = errorHandler.logAndReturn();
     runApp(
         MaterialApp(
             debugShowCheckedModeBanner: false,

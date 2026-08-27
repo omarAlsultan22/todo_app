@@ -9,6 +9,7 @@ import 'package:todo_app/data/models/message_result.dart';
 import '../../data/models/ChangeBottomSheetStateModel.dart';
 import 'package:todo_app/presentation/constants/ui_sizes.dart';
 import 'package:todo_app/presentation/states/app_sub_states.dart';
+import '../../errors/exceptions/database/database_operations.dart';
 import 'package:todo_app/presentation/mixins/error_handler_mixin.dart';
 
 
@@ -29,14 +30,14 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
 
   Future<void> _initializeDatabase() async {
     try {
-      await _useCase.executeInitializeDatabase(() => loadCurrentTabData(index: 0)
+      await _useCase.executeInitializeDatabase(() =>
+          loadCurrentTabData(index: 0)
       );
     }
-    catch (e, stackTrace) {
+    on InitializationException catch (e, stackTrace) {
       handleError(
           error: e,
           stackTrace: stackTrace,
-          operationType: 'initialization',
           onError: (failure) {
             final currentTabData = state.currentTabData;
             final newTabData = currentTabData!.copyWith(subState: ErrorState(
@@ -152,11 +153,10 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
     try {
       await _loadTasks();
     }
-    catch (e, stackTrace) {
+    on LoadException catch (e, stackTrace) {
       handleError(
           error: e,
           stackTrace: stackTrace,
-          operationType: 'load',
           onError: (failure) {
             final newTabData = currentTabData.copyWith(subState: ErrorState(
                 failure: failure
@@ -182,15 +182,14 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
       _addNewTask(index: index, taskModel: newTask);
     }
 
-    catch (e, stackTrace) {
+    on InsertException catch (e, stackTrace) {
       handleError(
           error: e,
           stackTrace: stackTrace,
-          operationType: 'insert',
           onError: (failure) =>
               state.copyWith(
                   messageResult: MessageResult.error(
-                      message: failure.message!
+                      message: e.message!
                   )
               )
       );
@@ -202,15 +201,14 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
     try {
       await _loadTasks();
     }
-    catch (e, stackTrace) {
+    on LoadMoreException catch (e, stackTrace) {
       handleError(
           error: e,
           stackTrace: stackTrace,
-          operationType: 'loadMore',
           onError: (failure) =>
               state.copyWith(
                   messageResult: MessageResult.error(
-                      message: failure.message!
+                      message: e.message!
                   )
               )
       );
@@ -232,15 +230,14 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
             message: 'Successfully added to $status tasks')));
       }
     }
-    catch (e, stackTrace) {
+    on UpdateException catch (e, stackTrace) {
       handleError(
           error: e,
           stackTrace: stackTrace,
-          operationType: 'update',
           onError: (failure) =>
               state.copyWith(
                   messageResult: MessageResult.error(
-                      message: failure.message!
+                      message: e.message!
                   )
               )
       );
@@ -254,11 +251,10 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
       _updateTasks(id);
       await _useCase.executeDeleteData(id: id);
     }
-    catch (e, stackTrace) {
+    on DeleteException catch (e, stackTrace) {
       handleError(
           error: e,
           stackTrace: stackTrace,
-          operationType: 'delete',
           onError: (failure) =>
               state.copyWith(
                   messageResult: MessageResult.error(
