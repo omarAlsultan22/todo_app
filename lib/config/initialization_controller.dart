@@ -1,6 +1,5 @@
-import 'package:todo_app/errors/exceptions/components_exception.dart';
-
 import '../di/service _locator.dart';
+import 'package:todo_app/errors/exceptions/components_exception.dart';
 import '../data/repositories_impl/local/flutter_secure_storage_repository.dart';
 
 
