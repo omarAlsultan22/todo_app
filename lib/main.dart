@@ -17,7 +17,7 @@ void main() async {
     runApp(const MyApp());
   }
   on ComponentsException catch (e, stackTrace) {
-    final errorLogger = ErrorLogger(error: e, stackTrace: stackTrace);
+    final errorLogger = ErrorLogger(exception: e.error, stackTrace: stackTrace);
     final exception = errorLogger.logAndReturn();
     runApp(
         MaterialApp(

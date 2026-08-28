@@ -36,7 +36,7 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
     }
     on InitializationException catch (e, stackTrace) {
       handleError(
-          error: e,
+          exception: e,
           stackTrace: stackTrace,
           onError: (failure) {
             final currentTabData = state.currentTabData;
@@ -94,39 +94,53 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
     required int index,
     required TaskModel taskModel,
   }) async {
-    // 1. حساب الموقع من قاعدة البيانات
-    final position = await _useCase.executeGetTaskPosition(
-      taskModel: taskModel,
-    );
+    try {
+      // 1. حساب الموقع من قاعدة البيانات
+      final position = await _useCase.executeGetTaskPosition(
+        taskModel: taskModel,
+      );
 
-    // 2. الحصول على البيانات الحالية
-    final tabData = state.getTabData(index);
-    if (tabData == null) {
-      throw Exception('Tab data not found for index: $index');
+      // 2. الحصول على البيانات الحالية
+      final tabData = state.getTabData(index);
+      if (tabData == null) {
+        throw TabDataException(index: index);
+      }
+
+      final currentTasks = tabData.tasks;
+
+      // 3. حساب الموقع الآمن للإضافة
+      final safePosition = PositionUtils.calculateSafePosition(
+        position: position,
+        tasksLength: currentTasks.length,
+      );
+
+      if (currentTasks.length >= _limit && currentTasks.length < safePosition) {
+        return;
+      }
+
+      // 4. إضافة المهمة في الموقع الآمن
+      final updatedTasks = state.insertTaskByPosition(
+          position, currentTasks, taskModel);
+
+      // 5. تحديث الحالة
+      final newTabData = tabData.copyWith(
+          tasks: updatedTasks, subState: const SuccessState()
+      );
+
+      emit(state.updateTab(index, newTabData));
     }
-
-    final currentTasks = tabData.tasks;
-
-    // 3. حساب الموقع الآمن للإضافة
-    final safePosition = PositionUtils.calculateSafePosition(
-      position: position,
-      tasksLength: currentTasks.length,
-    );
-
-    if (currentTasks.length >= _limit && currentTasks.length < safePosition) {
-      return;
+    on TabDataException catch (e, stackTrace) {
+      handleError(
+          exception: e,
+          stackTrace: stackTrace,
+          onError: (failure) =>
+              state.copyWith(
+                  messageResult: MessageResult.error(
+                      message: failure.message!
+                  )
+              )
+      );
     }
-
-    // 4. إضافة المهمة في الموقع الآمن
-    final updatedTasks = state.insertTaskByPosition(
-        position, currentTasks, taskModel);
-
-    // 5. تحديث الحالة
-    final newTabData = tabData.copyWith(
-        tasks: updatedTasks, subState: const SuccessState()
-    );
-
-    emit(state.updateTab(index, newTabData));
   }
 
   Future<void> switchTabAndLoadData({required int index}) async {
@@ -146,16 +160,16 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
     final currentTabData = state.currentTabData;
     emit(state.updateTab(index, currentTabData!));
 
-      final newTabData = currentTabData.copyWith(
-          subState: const LoadingState());
-      emit(state.updateTab(index, newTabData));
+    final newTabData = currentTabData.copyWith(
+        subState: const LoadingState());
+    emit(state.updateTab(index, newTabData));
 
     try {
       await _loadTasks();
     }
     on LoadException catch (e, stackTrace) {
       handleError(
-          error: e,
+          exception: e,
           stackTrace: stackTrace,
           onError: (failure) {
             final newTabData = currentTabData.copyWith(subState: ErrorState(
@@ -184,12 +198,12 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
 
     on InsertException catch (e, stackTrace) {
       handleError(
-          error: e,
+          exception: e,
           stackTrace: stackTrace,
           onError: (failure) =>
               state.copyWith(
                   messageResult: MessageResult.error(
-                      message: e.message!
+                      message: failure.message!
                   )
               )
       );
@@ -201,14 +215,14 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
     try {
       await _loadTasks();
     }
-    on LoadMoreException catch (e, stackTrace) {
+    on LoadException catch (e, stackTrace) {
       handleError(
-          error: e,
+          exception: e,
           stackTrace: stackTrace,
           onError: (failure) =>
               state.copyWith(
                   messageResult: MessageResult.error(
-                      message: e.message!
+                      message: failure.message!
                   )
               )
       );
@@ -232,12 +246,12 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
     }
     on UpdateException catch (e, stackTrace) {
       handleError(
-          error: e,
+          exception: e,
           stackTrace: stackTrace,
           onError: (failure) =>
               state.copyWith(
                   messageResult: MessageResult.error(
-                      message: e.message!
+                      message: failure.message!
                   )
               )
       );
@@ -253,7 +267,7 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
     }
     on DeleteException catch (e, stackTrace) {
       handleError(
-          error: e,
+          exception: e,
           stackTrace: stackTrace,
           onError: (failure) =>
               state.copyWith(

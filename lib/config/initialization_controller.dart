@@ -1,3 +1,5 @@
+import 'package:todo_app/errors/exceptions/components_exception.dart';
+
 import '../di/service _locator.dart';
 import '../data/repositories_impl/local/flutter_secure_storage_repository.dart';
 
@@ -19,8 +21,12 @@ class InitializationController {
 
     _repository = sl<FlutterSecureStorageRepository>();
 
-    await _repository.saveEncryptionKey();
-
+    try {
+      await _repository.saveEncryptionKey();
+    }
+    catch(e){
+      throw ComponentsException(error: e);
+    }
     _isInitialized = true;
   }
 

@@ -4,6 +4,7 @@ import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:todo_app/data/constants/data_strings.dart';
 import '../../../domain/repositories/data_repository.dart';
 import 'package:todo_app/presentation/constants/ui_strings.dart';
+import 'package:todo_app/errors/exceptions/database/database_operations.dart';
 import 'package:todo_app/domain/repositories/encryption_keys_repository.dart';
 
 
@@ -47,8 +48,8 @@ class TasksRepository implements DataRepository {
                 '$_id INTEGER PRIMARY KEY, $_title $_text, $_date $_text, $_time $_text, $_status $_text)')
             .then((value) {
           print('table created');
-        }).catchError((error) {
-          throw('Error When Creating Table ${error.toString()}');
+        }).catchError((e) {
+          InitializationException(error: e);
         });
         // 2. إنشاء فهرس للترتيب الزمني 🚀
         await database.execute('''
@@ -86,7 +87,7 @@ class TasksRepository implements DataRepository {
 
       // 2. التحقق من النتيجة
       if (result.isEmpty) {
-        throw Exception('Failed to insert task');
+        throw InsertException();
       }
 
       final insertedTask = result.first;
@@ -97,7 +98,8 @@ class TasksRepository implements DataRepository {
 
     } catch (error) {
       print('❌ Error inserting task: $error');
-      throw Exception('Error When Inserting New Record: ${error.toString()}');
+      throw InsertException(
+          message: 'Error When Inserting New Record: ${error.toString()}');
     }
   }
 
@@ -148,7 +150,7 @@ class TasksRepository implements DataRepository {
       );
     }
     catch (e) {
-      rethrow;
+      throw LoadException(error: e);
     }
   }
 
@@ -173,11 +175,11 @@ class TasksRepository implements DataRepository {
             '✅ Task updated: ${insertedTask[_title]} (ID: ${insertedTask[_id]})');
         return insertedTask;
       } else {
-        throw Exception('Task with ID $id not found');
+        throw UpdateException(message: 'Task with ID $id not found');
       }
     } catch (e) {
       print('❌ Error updating task: $e');
-      rethrow;
+      throw UpdateException(error: e);
     }
   }
 
@@ -190,7 +192,7 @@ class TasksRepository implements DataRepository {
       await _database.rawDelete('DELETE FROM $_tasks WHERE $_id = ?', [id]);
     }
     catch (e) {
-      rethrow;
+      throw DeleteException(error: e);
     }
   }
 }

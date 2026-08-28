@@ -2,17 +2,17 @@ import 'exceptions/base/app_exception.dart';
 
 
 class ErrorLogger {
-  final AppException error;
+  final AppException exception;
   final StackTrace stackTrace;
 
   ErrorLogger({
-    required this.error,
+    required this.exception,
     required this.stackTrace,
   });
 
   AppException logAndReturn() {
-    _logError(error, stackTrace);
-    return error;
+    _logError(exception.error, stackTrace);
+    return exception;
   }
 
   void _logError(dynamic error, StackTrace? stackTrace) {
