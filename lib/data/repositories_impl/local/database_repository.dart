@@ -4,7 +4,7 @@ import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:todo_app/data/constants/data_strings.dart';
 import '../../../domain/repositories/data_repository.dart';
 import 'package:todo_app/presentation/constants/ui_strings.dart';
-import 'package:todo_app/errors/exceptions/database/database_operations.dart';
+import 'package:todo_app/errors/exceptions/database_operations.dart';
 import 'package:todo_app/domain/repositories/encryption_keys_repository.dart';
 
 

@@ -1,4 +1,4 @@
-import '../base/app_exception.dart';
+import 'base/app_exception.dart';
 
 
 class  InitializationException extends AppException {
