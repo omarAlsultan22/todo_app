@@ -4,7 +4,7 @@ import 'base/app_exception.dart';
 class  InitializeException extends AppException {
   const InitializeException({super.error}) : super(
     message: 'Error When Creating Table.',
-    code: 'INSERT_ERROR',
+    code: 'INITIALIZE_ERROR',
   );
 }
 
@@ -50,6 +50,6 @@ class TabDataException extends AppException {
     required this.index
   }) : super(
     message: 'Tab data not found for index: $index.',
-    code: 'LOAD_ERROR',
+    code: 'TAB_DATA_ERROR',
   );
 }
