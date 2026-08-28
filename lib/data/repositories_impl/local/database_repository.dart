@@ -49,7 +49,7 @@ class TasksRepository implements DataRepository {
             .then((value) {
           print('table created');
         }).catchError((e) {
-          InitializationException(error: e);
+          InitializeException(error: e);
         });
         // 2. إنشاء فهرس للترتيب الزمني 🚀
         await database.execute('''

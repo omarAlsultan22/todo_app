@@ -34,7 +34,7 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
           loadCurrentTabData(index: 0)
       );
     }
-    on InitializationException catch (e, stackTrace) {
+    on InitializeException catch (e, stackTrace) {
       handleError(
           exception: e,
           stackTrace: stackTrace,

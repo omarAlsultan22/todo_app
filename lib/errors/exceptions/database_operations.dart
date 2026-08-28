@@ -1,8 +1,8 @@
 import 'base/app_exception.dart';
 
 
-class  InitializationException extends AppException {
-  const InitializationException({super.error}) : super(
+class  InitializeException extends AppException {
+  const InitializeException({super.error}) : super(
     message: 'Error When Creating Table.',
     code: 'INSERT_ERROR',
   );
