@@ -21,4 +21,9 @@ abstract class AppException implements Exception {
         onRetry: onRetry
     );
   }
+
+  @override
+  String toString() {
+    return error.message;
+  }
 }
