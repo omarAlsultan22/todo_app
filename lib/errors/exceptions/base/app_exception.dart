@@ -15,15 +15,15 @@ abstract class AppException implements Exception {
     this.code,
   });
 
-    Widget buildErrorWidget({VoidCallback? onRetry}) {
+  @override
+  String toString() {
+    return error.message;
+  }
+
+  Widget buildErrorWidget({VoidCallback? onRetry}) {
     return ErrorStateWidget(
         error: message,
         onRetry: onRetry
     );
-  }
-
-  @override
-  String toString() {
-    return error.message;
   }
 }
