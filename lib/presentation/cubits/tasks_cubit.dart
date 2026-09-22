@@ -70,7 +70,8 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
       }
 
       final newTabData = currentTabData!.copyWith(
-          subState: const SuccessState());
+          subState: const SuccessState()
+      );
       emit(
           state.updateTab(
               state.currentTabIndex, newTabData
