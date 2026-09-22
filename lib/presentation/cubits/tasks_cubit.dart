@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/constants/app_icons.dart';
 import 'package:todo_app/utils/position_utils.dart';
 import 'package:todo_app/data/models/task_model.dart';
-import '../../domain/useCases/useCase_operations.dart';
+import '../../domain/use_cases/use_case_operations.dart';
 import 'package:todo_app/data/models/message_result.dart';
 import '../../errors/exceptions/database_operations.dart';
 import '../../data/models/ChangeBottomSheetStateModel.dart';
@@ -134,11 +134,7 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
           exception: e,
           stackTrace: stackTrace,
           onError: (failure) =>
-              state.copyWith(
-                  messageResult: MessageResult.error(
-                      message: failure.message!
-                  )
-              )
+              state.setErrorState(failure)
       );
     }
   }
@@ -201,11 +197,7 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
           exception: e,
           stackTrace: stackTrace,
           onError: (failure) =>
-              state.copyWith(
-                  messageResult: MessageResult.error(
-                      message: failure.message!
-                  )
-              )
+              state.setErrorState(failure)
       );
     }
   }
@@ -220,11 +212,7 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
           exception: e,
           stackTrace: stackTrace,
           onError: (failure) =>
-              state.copyWith(
-                  messageResult: MessageResult.error(
-                      message: failure.message!
-                  )
-              )
+              state.setErrorState(failure)
       );
     }
   }
@@ -249,11 +237,7 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
           exception: e,
           stackTrace: stackTrace,
           onError: (failure) =>
-              state.copyWith(
-                  messageResult: MessageResult.error(
-                      message: failure.message!
-                  )
-              )
+              state.setErrorState(failure)
       );
     }
   }
@@ -270,11 +254,7 @@ class TasksCubit extends Cubit<TasksState> with ErrorHandlerMixin {
           exception: e,
           stackTrace: stackTrace,
           onError: (failure) =>
-              state.copyWith(
-                  messageResult: MessageResult.error(
-                      message: failure.message!
-                  )
-              )
+              state.setErrorState(failure)
       );
     }
   }

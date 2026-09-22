@@ -1,7 +1,7 @@
 import '../../data/repositories_impl/local/flutter_secure_storage_repository.dart';
 import '../../data/repositories_impl/local/database_repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../../domain/useCases/useCase_operations.dart';
+import '../../domain/use_cases/use_case_operations.dart';
 import '../../presentation/cubits/tasks_cubit.dart';
 import '../../utils/pagination_state_manager.dart';
 import '../service _locator.dart';

@@ -55,6 +55,7 @@ class TasksState {
     return tabsData[index];
   }
 
+  // Tasks functions
   List<TaskModel> insertTaskByPosition(int position,
       List<TaskModel> tasks,
       TaskModel newTask,) {
@@ -80,6 +81,15 @@ class TasksState {
         tasks: tasksModels,
         hasMore: hasMore,
         offset: offset
+    );
+  }
+
+  //States
+  TasksState setErrorState(AppException failure) {
+    return copyWith(
+        messageResult: MessageResult.error(
+            message: failure.message!
+        )
     );
   }
 
