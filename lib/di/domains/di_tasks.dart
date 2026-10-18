@@ -1,7 +1,8 @@
-import '../../data/repositories_impl/local/flutter_secure_storage_repository.dart';
-import '../../data/repositories_impl/local/database_repository.dart';
+import '../../data/repositories_impl/local/encryption_keys_repository_impl.dart';
+import 'package:todo_app/data/data_sources/tasks_data_source_impl.dart';
+import '../../data/repositories_impl/local/tasks_repository_impl.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../../domain/use_cases/use_case_operations.dart';
+import '../../domain/use_cases/tasks_use_case.dart';
 import '../../presentation/cubits/tasks_cubit.dart';
 import '../../utils/pagination_state_manager.dart';
 import '../service _locator.dart';
@@ -9,23 +10,29 @@ import '../service _locator.dart';
 
 class TasksDependencies {
   static void register() {
+    //DataSource
+    sl.registerLazySingleton(() =>
+    TasksDataSourceImpl());
+
     // Repository
     sl.registerLazySingleton(() =>
-        FlutterSecureStorageRepository(
+        EncryptionKeysRepositoryImpl(
             flutterSecureStorage: sl<FlutterSecureStorage>()));
 
     sl.registerLazySingleton(() =>
-        TasksRepository(
-            repository: sl<FlutterSecureStorageRepository>()));
+        TasksRepositoryImpl(
+            dataSource: sl<TasksDataSourceImpl>(),
+            encryptionKeysRepository: sl<EncryptionKeysRepositoryImpl>())
+    );
 
     // UseCase
     sl.registerLazySingleton(() =>
-        GetTasksUseCase(
-            repository: sl<TasksRepository>(),
+        TasksUseCase(
+            repository: sl<TasksRepositoryImpl>(),
             paginationHandler: sl<PaginationHandler>()));
 
     // Cubit
     sl.registerFactory(() =>
-        TasksCubit(useCase: sl<GetTasksUseCase>()));
+        TasksCubit(useCase: sl<TasksUseCase>()));
   }
 }

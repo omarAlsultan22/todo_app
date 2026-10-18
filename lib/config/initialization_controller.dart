@@ -1,6 +1,6 @@
 import '../di/service _locator.dart';
 import 'package:todo_app/errors/exceptions/components_exception.dart';
-import '../data/repositories_impl/local/flutter_secure_storage_repository.dart';
+import '../data/repositories_impl/local/encryption_keys_repository_impl.dart';
 
 
 class InitializationController {
@@ -11,14 +11,14 @@ class InitializationController {
 
   InitializationController._internal();
 
-  late FlutterSecureStorageRepository _repository;
+  late EncryptionKeysRepositoryImpl _repository;
 
   bool _isInitialized = false;
 
   Future<void> init() async {
     if (_isInitialized) return;
 
-    _repository = sl<FlutterSecureStorageRepository>();
+    _repository = sl<EncryptionKeysRepositoryImpl>();
 
     try {
       await _repository.saveEncryptionKey();

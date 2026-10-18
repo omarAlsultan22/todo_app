@@ -3,10 +3,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:todo_app/domain/repositories/encryption_keys_repository.dart';
 
 
-class FlutterSecureStorageRepository implements EncryptionKeysRepository {
+class EncryptionKeysRepositoryImpl implements EncryptionKeysRepository {
   final FlutterSecureStorage _flutterSecureStorage;
 
-  FlutterSecureStorageRepository({required FlutterSecureStorage flutterSecureStorage})
+  EncryptionKeysRepositoryImpl({required FlutterSecureStorage flutterSecureStorage})
       : _flutterSecureStorage = flutterSecureStorage;
 
   static const encryptionKey = 'encryptionKey';

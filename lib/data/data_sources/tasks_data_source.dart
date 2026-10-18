@@ -1,9 +1,11 @@
 import 'package:flutter/widgets.dart';
 
 
-abstract class DataRepository {
-
-  Future<void> createDatabase(VoidCallback onLoad);
+abstract class TasksDataSource {
+  Future<void> createDatabase({
+    String? password,
+    required VoidCallback onLoad,
+  });
 
   Future<Map<String, Object?>> insertToDatabase({
     required String title,
@@ -17,7 +19,7 @@ abstract class DataRepository {
     required String status,
   });
 
-  Future <List<Map<String, Object?>>> getDataFromDatabase({
+  Future<List<Map<String, Object?>>> getDataFromDatabase({
     required int limit,
     required int offset,
     required String status,
@@ -28,7 +30,7 @@ abstract class DataRepository {
     required int id,
   });
 
-  Future <void> deleteFromDatabase({
+  Future<void> deleteFromDatabase({
     required int id,
   });
 }

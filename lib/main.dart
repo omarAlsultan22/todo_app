@@ -4,12 +4,14 @@ import 'errors/error_logger.dart';
 import 'package:flutter/material.dart';
 import 'config/initialization_controller.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app/di/service%20_locator.dart';
 import 'package:todo_app/presentation/widgets/build_snack_bar.dart';
 import 'package:todo_app/errors/exceptions/components_exception.dart';
 
 
 void main() async {
   Bloc.observer = MyBlocObserver();
+  setupServiceLocator();
   final initializationController = InitializationController();
 
   try {
@@ -31,6 +33,7 @@ void main() async {
                           await initializationController.retryInit();
                           runApp(const MyApp());
                         } catch (e) {
+                          if (!context.mounted) return;
                           BuildSnackBar.show(
                               message: 'Initialization failed',
                               context: context,

@@ -2,21 +2,13 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:todo_app/data/constants/data_strings.dart';
-import '../../../domain/repositories/data_repository.dart';
 import 'package:todo_app/presentation/constants/ui_strings.dart';
+import 'package:todo_app/data/data_sources/tasks_data_source.dart';
 import 'package:todo_app/errors/exceptions/database_operations.dart';
-import 'package:todo_app/domain/repositories/encryption_keys_repository.dart';
 
 
-class TasksRepository implements DataRepository {
-  final EncryptionKeysRepository _repository;
-
-  TasksRepository({
-    required EncryptionKeysRepository repository
-  })
-      : _repository = repository;
-
-  static late Database _database;
+class TasksDataSourceImpl implements TasksDataSource {
+  late Database _database;
 
   static const _text = 'TEXT';
   static const _tasks = 'tasks';
@@ -27,10 +19,11 @@ class TasksRepository implements DataRepository {
   static const _status = DataStrings.status;
 
   @override
-  Future<void> createDatabase(VoidCallback onLoad) async {
-    final password = await _repository.getEncryptionKey();
-
-    openDatabase(
+  Future<void> createDatabase({
+    String? password,
+    required VoidCallback onLoad
+  }) async {
+    await openDatabase(
       'todo.db',
       version: 1,
       password: password,
@@ -49,7 +42,7 @@ class TasksRepository implements DataRepository {
             .then((value) {
           print('table created');
         }).catchError((e) {
-          InitializeException(error: e);
+          throw InitializeException(error: e);
         });
         // 2. إنشاء فهرس للترتيب الزمني 🚀
         await database.execute('''
