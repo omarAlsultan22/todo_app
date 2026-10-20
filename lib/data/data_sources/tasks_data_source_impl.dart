@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
+import '../../domain/data_sources/tasks_data_source.dart';
 import 'package:todo_app/data/constants/data_strings.dart';
 import 'package:todo_app/presentation/constants/ui_strings.dart';
-import 'package:todo_app/domain/services/tasks_data_source.dart';
 import 'package:todo_app/errors/exceptions/database_operations.dart';
 
 
