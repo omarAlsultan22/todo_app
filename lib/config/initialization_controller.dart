@@ -1,4 +1,5 @@
 import '../di/service _locator.dart';
+import '../domain/repositories/encryption_keys_repository.dart';
 import 'package:todo_app/errors/exceptions/components_exception.dart';
 import '../data/repositories_impl/local/encryption_keys_repository_impl.dart';
 
@@ -11,7 +12,7 @@ class InitializationController {
 
   InitializationController._internal();
 
-  late EncryptionKeysRepositoryImpl _repository;
+  late EncryptionKeysRepository _repository;
 
   bool _isInitialized = false;
 
