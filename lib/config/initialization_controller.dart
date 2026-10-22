@@ -1,7 +1,6 @@
 import '../di/service _locator.dart';
 import '../domain/repositories/encryption_keys_repository.dart';
 import 'package:todo_app/errors/exceptions/components_exception.dart';
-import '../data/repositories_impl/local/encryption_keys_repository_impl.dart';
 
 
 class InitializationController {
@@ -19,7 +18,7 @@ class InitializationController {
   Future<void> init() async {
     if (_isInitialized) return;
 
-    _repository = sl<EncryptionKeysRepositoryImpl>();
+    _repository = sl<EncryptionKeysRepository>();
 
     try {
       await _repository.saveEncryptionKey();
