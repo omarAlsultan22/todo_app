@@ -7,7 +7,7 @@ import '../../domain/data_sources/tasks_data_source.dart';
 import '../../domain/repositories/tasks_repository.dart';
 import '../../domain/use_cases/tasks_use_case.dart';
 import '../../presentation/cubits/tasks_cubit.dart';
-import '../../utils/pagination_state_manager.dart';
+import '../../domain/use_cases/pagination_state_manager.dart';
 import '../service _locator.dart';
 
 

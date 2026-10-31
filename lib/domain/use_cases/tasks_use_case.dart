@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import '../../data/models/task_model.dart';
 import '../repositories/tasks_repository.dart';
-import '../../utils/pagination_state_manager.dart';
+import 'pagination_state_manager.dart';
 import 'package:todo_app/data/models/category_data.dart';
 
 
