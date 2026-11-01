@@ -21,10 +21,11 @@ class TasksDataSourceImpl implements TasksDataSource {
   @override
   Future<void> createDatabase({
     String? password,
-    required VoidCallback onLoad
+    required VoidCallback onLoad,
+    String databasePath = 'todo.db'
   }) async {
     await openDatabase(
-      'todo.db',
+      databasePath,
       version: 1,
       password: password,
       onCreate: (database, version) async {

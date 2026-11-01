@@ -4,7 +4,8 @@ import 'package:flutter/widgets.dart';
 abstract class TasksDataSource {
   Future<void> createDatabase({
     String? password,
-    required VoidCallback onLoad,
+    String databasePath,
+    required VoidCallback onLoad
   });
 
   Future<Map<String, Object?>> insertToDatabase({

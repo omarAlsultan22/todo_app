@@ -4,22 +4,25 @@ import 'package:todo_app/domain/repositories/encryption_keys_repository.dart';
 
 
 class EncryptionKeysRepositoryImpl implements EncryptionKeysRepository {
-  final FlutterSecureStorage _flutterSecureStorage;
+  final FlutterSecureStorage _storage;
+  final String Function() _generateKey;
 
-  EncryptionKeysRepositoryImpl({required FlutterSecureStorage flutterSecureStorage})
-      : _flutterSecureStorage = flutterSecureStorage;
+  EncryptionKeysRepositoryImpl({
+  required FlutterSecureStorage flutterSecureStorage,
+  String Function()? generateKey,
+  })  : _storage = flutterSecureStorage,
+  _generateKey = generateKey ?? EncryptionService.generateSecureKey;
 
   static const encryptionKey = 'encryptionKey';
 
   @override
   Future<void> saveEncryptionKey() async {
-    final encryptionValue = EncryptionService.generateSecureKey();
-    await _flutterSecureStorage.write(
-        key: encryptionKey, value: encryptionValue);
+    await _storage.write(
+        key: encryptionKey, value: _generateKey());
   }
 
   @override
   Future<String?> getEncryptionKey() async {
-    return await _flutterSecureStorage.read(key: encryptionKey);
+    return await _storage.read(key: encryptionKey);
   }
 }
