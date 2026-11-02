@@ -8,7 +8,7 @@ class TaskModel {
   final String time;
   final String date;
 
-  TaskModel({
+  const TaskModel({
     required this.id,
     required this.status,
     required this.title,
